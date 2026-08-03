@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 运行时产物（本地生成，不入库）
+视频/
+音频/
+图片/
+文本/
+NoteBooks/
+temp/
+
+# 本地展示硬链接（Readme 标准化规则：Git 追踪 Readme.md，本地 READEME_* 排除）
+READEME_*
+
+# 协同日志（本地生成）
+模型协同日志/
+
+# 环境与密钥
+.env
+*.log
+
+# 外部克隆的下载器（用户按 README 第 5 步克隆，不入库）
+douyin-downloader/
+
+# OS
+.DS_Store
+Thumbs.db

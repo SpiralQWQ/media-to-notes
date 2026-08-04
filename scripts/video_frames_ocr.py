@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""视频关键帧视觉分析：抽帧 → OCR(默认,多帧无上限) + 可选 GLM 视觉理解。
+"""视频关键帧视觉分析：抽帧 → OCR(默认,多帧上限1200) + 可选 GLM 视觉理解。
 
 用法: python video_frames_ocr.py <视频.mp4> [--mode fixed|scene] [--interval 1] [--glm yes] [--out 输出.txt]
 
@@ -142,7 +142,9 @@ def main():
         print(f"[INFO] 场景检测抽帧: {len(frames)} 帧 (阈值{args.threshold}, 最大间隔{args.max_interval}s)")
     else:
         frames = extract_fixed(args.video, args.interval, tmpdir)
-        print(f"[INFO] 固定间隔抽帧: {len(frames)} 帧 (每{args.interval}秒1帧, 无上限)")
+        print(f"[INFO] 固定间隔抽帧: {len(frames)} 帧 (每{args.interval}秒1帧, 上限{MAX_FRAMES})")
+        if len(frames) >= MAX_FRAMES:
+            print(f"[WARN] 已达抽帧上限 {MAX_FRAMES}，超长视频画面可能被截断")
 
     if not frames:
         sys.exit("未抽到帧")

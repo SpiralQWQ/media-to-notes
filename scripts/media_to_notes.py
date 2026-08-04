@@ -154,6 +154,8 @@ def load_state() -> dict:
         sys.exit('未找到 temp/current_job.json，请先运行 python media_to_notes.py "<链接或本地路径>" --detect')
     except json.JSONDecodeError:
         sys.exit("temp/current_job.json 格式异常（内容已损坏，不是合法 JSON），请重新运行 --detect")
+    except (UnicodeDecodeError, OSError):
+        sys.exit("temp/current_job.json 无法读取（编码或权限异常），请重新运行 --detect")
     if not isinstance(st, dict) or "type" not in st:
         sys.exit("temp/current_job.json 格式异常，请重新运行 --detect")
     required = {"video": ("vdir", "video", "adir", "audio", "summary"),
@@ -345,7 +347,7 @@ def detect(source: str) -> None:
     elif os.path.exists(source):
         _detect_local(source, today)
     else:
-        sys.exit(f"无法识别的输入（需 URL 或存在的本地路径）: {source[:200]}")
+        sys.exit(f"无法识别的输入（需 URL 或存在的本地路径）: {_san(source[:200])}")
     print("→ 请向用户确认: 是否开启 GLM 视觉分析 (glm-4.6v-flashx)？然后运行 --glm yes|no")
 
 
@@ -393,7 +395,11 @@ def process(glm: str) -> None:
                           "--image", img, "--prompt",
                           "请描述这张图片的内容：主体/图表/界面/文字信息，用于辅助制作学习笔记。简洁中文。"],
                          cwd=".", timeout=180)
-                lines.append(f"【{os.path.basename(img)}】\n{(rr.stdout or rr.stderr or '').strip()[:500]}")
+                if rr.returncode != 0:
+                    print(f"  [WARN] GLM 分析失败: {os.path.basename(img)}")
+                    lines.append(f"【{os.path.basename(img)}】\n[GLM 分析失败: {_san((rr.stderr or rr.stdout or '').strip()[:200])}]")
+                else:
+                    lines.append(f"【{os.path.basename(img)}】\n{(rr.stdout or '').strip()[:500]}")
             with open(glm_txt, "w", encoding="utf-8") as f:
                 f.write("\n\n".join(lines))
             print(f"      GLM 描述: {_san(glm_txt)}")

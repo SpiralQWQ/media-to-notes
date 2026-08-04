@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <a href="#"><img src="https://img.shields.io/badge/version-0.1.0-2ea44f" alt="version"></a>
+  <a href="https://github.com/SpiralQWQ/media-to-notes/releases"><img src="https://img.shields.io/badge/version-0.1.0-blue" alt="version"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-3776AB" alt="Python 3.10+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL%203.0%20%7C%20Commercial-blue" alt="license"></a>
   <a href="#"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="platform"></a>
@@ -118,7 +118,7 @@ Steps:
    git clone https://github.com/jiji262/douyin-downloader.git
    ```
 
-6. **Set the Douyin Cookie.** The downloader needs a login cookie. Run `scripts/get_douyin_cookie.bat` (it opens a browser to log in and saves the cookie) or follow that repository's README. When it expires, re-run the helper — no re-install needed.
+6. **Set the Douyin Cookie.** The downloader needs a login cookie. Run `scripts/get_douyin_cookie.bat` (it opens a browser to log in and saves the cookie to `douyin-downloader/config.yml`, local only) or follow that repository's README. When it expires, re-run the helper — no re-install needed.
 
 7. **Optional: get a `GLM_API_KEY`** from the BigModel open platform if you plan to use `--glm yes`.
 
@@ -211,9 +211,9 @@ media-to-notes/
 ├── .env.example                   # all env vars optional
 ├── requirements.txt
 ├── SKILL.md
-├── CHANGELOG.md
+├── CHANGELOG.md / CHANGELOG_zh.md
 ├── LICENSE
-└── README.md
+└── README.md / README_zh.md
 ```
 
 Runtime folders created on first run (git-ignored): 视频/, 音频/, 图片/, 文本/, NoteBooks/, temp/.

@@ -129,7 +129,7 @@ git clone https://github.com/jiji262/douyin-downloader.git
 
 ### 第六步 —— 抖音 Cookie 设置
 
-双击 `scripts\get_douyin_cookie.bat`（或按 jiji262/douyin-downloader 仓库 README）抓取登录 Cookie。Cookie 过期时同样重新运行即可。
+双击 `scripts\get_douyin_cookie.bat`（或按 jiji262/douyin-downloader 仓库 README）抓取登录 Cookie（保存到 `douyin-downloader/config.yml`，仅本机）。Cookie 过期时同样重新运行即可。
 
 ### 第七步 —— GLM_API_KEY（可选）
 

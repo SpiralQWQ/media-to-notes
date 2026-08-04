@@ -27,6 +27,17 @@
 **目前仅支持抖音视频、图片、文本和本地视频、图片、文本的转写，其余平台还未测试，敬请期待**
 </p>
 
+## 💛 支持一下
+
+如果这个项目帮到过你，可以请我喝杯咖啡 ☕。打赏全凭心意，不打赏也完全没关系——项目永远免费开源。做开源这么久，每一份小小的支持都能让我高兴很久。
+
+<p align="center">
+  <img src="assets/donate_wechat.jpg" alt="微信收款" width="200">
+  <img src="assets/donate_alipay.jpg" alt="支付宝收款" width="200">
+</p>
+
+<p align="center"><i>能一路读到这里的你，谢谢。🙏</i></p>
+
 ---
 
 ## What It Does

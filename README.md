@@ -189,6 +189,8 @@ Body structure:
 
 Feynman questions are open-ended and drawn from four angles: restate to a beginner, make an analogy, apply or derive, and find the common misconception. OCR text must be corrected against context before it lands in the note — see `config/ocr_corrections.example.json`.
 
+Style rules (mandatory): extremely detailed · clear and structured · plain-language analogies · professionally accurate (keep English terms alongside Chinese) · teachable (an AI can read the note and teach a total beginner from it).
+
 ## File Tree
 
 ```

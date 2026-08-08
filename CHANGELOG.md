@@ -1,21 +1,15 @@
 # Changelog
 All notable changes to media-to-notes are documented here, following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versioning follows [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.2.0] — 2026-08-08
 
-- **Added** Local path support: video / image / text files are used directly, no downloader needed
-- **Added** Text-type branch (📄): local .txt/.md/.markdown → directly structured into an AI teaching note
-- **Added** yt-dlp source routing for YouTube / Bilibili / other links (requires `yt-dlp`; `DD_YTDLP` to override)
-- **Fixed** Path sanitization: directory/file names strip Windows-illegal characters and `..`; aweme_id validated as pure digits
-- **Fixed** `.env` is now actually loaded via `python-dotenv` (media_to_notes.py, glm_vision.py)
-- **Fixed** Dependencies: added `soundfile`, `paddlepaddle`, `python-dotenv`; documented `yt-dlp`
-- **Fixed** Robustness: temp-frame dir cleanup on all exit paths (atexit), ffprobe/ffmpeg timeouts, VideoCapture released on error
-- **Fixed** Friendly error when `--glm` runs without a prior `--detect`; missing downloader gives an actionable message
-- **Changed** Docs aligned with code: multi-source support described honestly; ocr_corrections.json described as a reference dictionary (not auto-applied)
-- **Changed** CLAUDE.template.md license annotation MIT → dual (AGPL-3.0 / commercial)
-- **Fixed** Windows console (GBK): UTF-8 stdout/stderr reconfigured so emoji/Chinese never crash; `run()` now catches TimeoutExpired / FileNotFoundError / PermissionError / OSError with readable messages; a corrupt state file gives a readable error instead of a traceback
-- **Fixed** OCR & pipeline robustness: per-image isolation (a bad image no longer aborts the whole batch); malformed timestamps fall back instead of crashing; directory sequence numbers support ≥100 entries per day
-- **Verified** Final acceptance: all six review dimensions passed — code robustness, security & privacy, multi-source distribution correctness, dependency & configuration closure, docs consistency, license & disclaimer; tri-party review avg 96.3/100 (≥95 threshold)
+- **Added** Out-of-the-box setup wizard `setup.py`: clone, run `python setup.py`, answer 9 questions (use case / OCR frequency / GLM vision / note language / transcription appendix / Feynman density / intermediate files / note organization), and it writes `.env` + `spec/user_prefs.md` automatically — no docs required up front
+- **Added** User-preference file `spec/user_prefs.md`: followed by Claude when generating notes (language / Feynman density / appendix / organization); SKILL.md and CLAUDE.template.md now say "read user_prefs.md before generating"
+- **Added** Configurable video OCR frequency: `OCR_INTERVAL` (seconds, or `scene`/`no`) replaces the hardcoded 1 frame/second
+- **Added** Configurable GLM mode: `GLM_MODE` (`yes`/`all`/`no`)
+- **Added** Note-preference env vars: `NOTE_LANG` / `KEEP_APPENDIX` / `FEYNMAN_DENSITY` / `KEEP_MIDDLE` / `NOTE_ORGANIZE`
+- **Changed** README (EN/ZH) install steps: added an "out-of-the-box setup wizard" step; env-var table expanded with the new settings
+- **Fixed** Hardcoded `--interval 1` now reads `OCR_INTERVAL` from `.env`
 
 ## [0.1.0] — 2026-08-03
 

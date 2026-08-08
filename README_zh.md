@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.1.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-0.2.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/python-3.10+-green" alt="Python">
   <img src="https://img.shields.io/badge/license-AGPL%203.0%20%7C%20Commercial-blue" alt="License">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="Platform">
@@ -109,17 +109,25 @@ pip install -r requirements.txt
 
 抖音下载器 jiji262/douyin-downloader 需要单独克隆，位置默认是仓库根目录下的 `douyin-downloader`（可用 `DD_DL_SRC` 改）。
 
-### 第三步 —— 安装 ffmpeg
+### 第三步 —— 开箱即用配置向导（推荐）
+
+```bash
+python setup.py
+```
+
+回答 9 个问题（使用场景 / OCR 频率 / GLM 视觉 / 笔记语言 / 转写附录 / 费曼题密度 / 中间产物 / 笔记组织），自动生成 `.env`（脚本运行时读）和 `spec/user_prefs.md`（Claude 生成笔记时遵循）。**无需提前看文档，答完即用。** 之后随时可重跑修改配置。
+
+### 第四步 —— 安装 ffmpeg
 
 下载 ffmpeg 并把 `bin` 目录加入 PATH，然后确认 `ffmpeg -version` 有输出。抽帧和音频提取都依赖它。
 
-### 第四步 —— 配置环境变量
+### 第五步 —— 配置环境变量
 
 ```bash
 copy .env.example .env
 ```
 
-`.env` 里的变量**全部可省略**，脚本会基于自身目录自动推导（需要 `python-dotenv` 才自动加载，已在 requirements.txt 中）：
+> 用 `setup.py` 配置过的可跳过本步（已自动生成 .env）。手动配时：`.env` 里的变量**全部可省略**，脚本会基于自身目录自动推导（需要 `python-dotenv` 才自动加载，已在 requirements.txt 中）：
 
 | 变量 | 作用 |
 |------|------|
@@ -129,8 +137,15 @@ copy .env.example .env
 | `DD_OCR_PY` | OCR 脚本解释器（RapidOCR / PaddleOCR） |
 | `DD_YTDLP` | yt-dlp 可执行文件（默认 `yt-dlp`，仅用抖音链接可忽略） |
 | `GLM_API_KEY` | GLM 视觉分析 Key（可选） |
+| `OCR_INTERVAL` | 视频画面 OCR 频率：秒数（`1`=每秒1帧 / `0.5`=每秒2帧）或 `scene`=画面变化才抽 / `no`=不OCR |
+| `GLM_MODE` | GLM 画面理解：`yes`=只关键帧(省钱) / `all`=每帧(贵) / `no`=不用 |
+| `NOTE_LANG` | 笔记正文语言：`zh`=中文 / `en`=英文 / `auto`=跟随内容 |
+| `KEEP_APPENDIX` | 笔记末尾是否保留完整转写附录：`true` / `false` |
+| `FEYNMAN_DENSITY` | 费曼思考题密度：`10`=10/8/6 / `6`=6/4/3 / `0`=不要 |
+| `KEEP_MIDDLE` | 转写中间产物是否保留到缓存：`true` / `false` |
+| `NOTE_ORGANIZE` | 笔记目录组织：`date`=按日期 / `topic`=按课程主题分目录 |
 
-### 第五步 —— 安装抖音下载器
+### 第六步 —— 安装抖音下载器
 
 仅下载抖音内容时需要。把 [jiji262/douyin-downloader](https://github.com/jiji262/douyin-downloader) 克隆到仓库根目录，使 `douyin-downloader/run.py` 存在（或设置 `DD_DL_SRC` 指向其源码目录）：
 
@@ -138,11 +153,11 @@ copy .env.example .env
 git clone https://github.com/jiji262/douyin-downloader.git
 ```
 
-### 第六步 —— 抖音 Cookie 设置
+### 第七步 —— 抖音 Cookie 设置
 
 双击 `scripts\get_douyin_cookie.bat`（或按 jiji262/douyin-downloader 仓库 README）抓取登录 Cookie（保存到 `douyin-downloader/config.yml`，仅本机）。Cookie 过期时同样重新运行即可。
 
-### 第七步 —— GLM_API_KEY（可选）
+### 第八步 —— GLM_API_KEY（可选）
 
 在智谱开放平台 [open.bigmodel.cn](https://open.bigmodel.cn) 申请 Key，填入 `.env` 的 `GLM_API_KEY`。不配置就无法开启 `--glm yes`。
 

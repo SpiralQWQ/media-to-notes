@@ -1,21 +1,15 @@
 # 变更日志
 本项目所有重要变更都记录在此，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，版本遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
+## [0.2.0] — 2026-08-08
 
-- **Added** 本地路径支持：视频/图片/文本文件直用，无需下载器
-- **Added** 文本类型分支（📄）：本地 .txt/.md/.markdown → 直接整理成 AI 教材
-- **Added** yt-dlp 来源路由：YouTube/B站等链接自动走 yt-dlp（需安装 yt-dlp，可用 `DD_YTDLP` 覆盖）
-- **Fixed** 路径安全：目录/文件名过滤 Windows 非法字符与 `..`；aweme_id 校验为纯数字
-- **Fixed** `.env` 现在真正生效（python-dotenv 加载，media_to_notes.py 与 glm_vision.py）
-- **Fixed** 依赖补齐：新增 soundfile / paddlepaddle / python-dotenv；文档化 yt-dlp
-- **Fixed** 健壮性：临时帧目录所有退出路径兜底清理（atexit）、ffprobe/ffmpeg 超时、VideoCapture 异常释放
-- **Fixed** 未先 `--detect` 直接 `--glm` 给出友好提示；下载器缺失给出可操作提示
-- **Changed** 文档与代码对齐：多源支持如实描述；ocr_corrections.json 说明为参考词典（非自动化套用）
-- **Changed** CLAUDE.template.md 许可证标注 MIT → 双重许可（AGPL-3.0 / 商业授权）
-- **Fixed** Windows 控制台（GBK）：UTF-8 stdout/stderr 重配避免 emoji/中文崩溃；`run()` 兜底 TimeoutExpired/FileNotFoundError/PermissionError/OSError 可读报错；损坏状态文件给可读提示而非裸 traceback
-- **Fixed** OCR 与管道健壮性：逐图隔离（坏图不中断整批）；畸形时间戳回退不崩溃；目录序号支持 ≥100 条/天
-- **Verified** 终审验收：六维验证全部通过 — 代码健壮性、安全与隐私、多源分发正确性、依赖与配置闭环、文档一致性、许可与免责；三方终审均分 96.3/100（≥95 阈值）
+- **Added** 开箱即用配置向导 `setup.py`：拉取后跑 `python setup.py`，回答 9 个问题（使用场景/OCR频率/GLM视觉/笔记语言/转写附录/费曼题密度/中间产物/笔记组织）即自动生成 `.env` + `spec/user_prefs.md`，无需提前看文档
+- **Added** 用户偏好档 `spec/user_prefs.md`：Claude 生成笔记时遵循（语言/费曼题密度/是否保留附录/目录组织），SKILL.md 与 CLAUDE.template.md 已声明"生成笔记前必读"
+- **Added** 视频 OCR 频率可配置：`OCR_INTERVAL`（秒数或 `scene`/`no`），替代硬编码每秒 1 帧
+- **Added** GLM 模式可配置：`GLM_MODE`（`yes`/`all`/`no`）
+- **Added** 笔记偏好环境变量：`NOTE_LANG` / `KEEP_APPENDIX` / `FEYNMAN_DENSITY` / `KEEP_MIDDLE` / `NOTE_ORGANIZE`
+- **Changed** README(中英) 安装步骤：新增「开箱即用配置向导」步骤，环境变量表补全新配置项
+- **Fixed** `--interval 1` 硬编码改为读 `.env` 的 `OCR_INTERVAL`
 
 ## [0.1.0] — 2026-08-03
 

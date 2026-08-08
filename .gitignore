@@ -32,3 +32,4 @@ scripts/ocr_corrections.json
 # OS
 .DS_Store
 Thumbs.db
+spec/user_prefs.md

@@ -10,6 +10,17 @@ tags: [抖音, YouTube, B站, 视频转笔记, 图集OCR, FunASR, 学习笔记, 
 把任意视频（抖音/YouTube/B站/本地文件）一键转成**喂给 AI 教学的 AI 教材笔记**。
 笔记**不嵌图片**，但会**抽帧做画面文字识别（OCR）**来补全音频转写漏掉的视觉信息。
 
+## 🚀 开箱即用（拉取后第一步）
+
+**先跑配置向导，回答几个问题就能用，无需提前看文档：**
+
+```powershell
+python setup.py
+```
+
+向导会问 9 个问题（使用场景 / OCR 频率 / GLM 视觉 / 笔记语言 / 转写附录 / 费曼题密度 / 中间产物 / 笔记组织），
+自动生成 `.env`（脚本运行时读）和 `spec/user_prefs.md`（Claude 生成笔记时遵循）。
+
 ## 触发方式
 
 用户丢一个视频链接或本地视频路径即可触发（**无需明说"做笔记"**）。
@@ -30,11 +41,12 @@ python scripts\media_to_notes.py "<链接>" --detect
 ```powershell
 python scripts\media_to_notes.py --glm yes|no
 ```
-- 🎬 **视频** → ① SenseVoice 转写（`transcribe_funasr.py`）② **多帧 OCR 画面文字**（`video_frames_ocr.py`，默认每1秒1帧、上限1200帧，**OCR 全帧免费**）③ GLM=yes 时 **只对关键帧**（画面变化大的帧，`select_key_frames` 自动判断）调用 `glm_vision.py`（glm-4.6v-flashx）描述画面——省钱
+- 🎬 **视频** → ① SenseVoice 转写（`transcribe_funasr.py`）② **多帧 OCR 画面文字**（`video_frames_ocr.py`，默认间隔/上限由 `.env` 的 `OCR_INTERVAL` 控制，**OCR 全帧免费**）③ GLM=yes 时 **只对关键帧**（画面变化大的帧，`select_key_frames` 自动判断）调用 `glm_vision.py`（glm-4.6v-flashx）描述画面——省钱
 - 🖼️ **图集** → ① OCR 每张图（`ocr_images.py`）② GLM=yes 再对每张图调用 `glm_vision.py` 描述
 
-### 阶段3：Claude 读取转写/OCR/GLM 文本 → 按 `spec\note_style_spec.md` 生成 AI 教材笔记
-写入 `NoteBooks\{日期}\{顺序}_{日期}_{概要}_{大小}.md`
+### 阶段3：Claude 读取转写/OCR/GLM 文本 → 按 `spec\note_style_spec.md` **+ `spec\user_prefs.md`（用户偏好）** 生成 AI 教材笔记
+写入 `NoteBooks\{日期}\{顺序}_{日期}_{概要}_{大小}.md`（若 .env 设 `NOTE_ORGANIZE=topic` 则按课程/主题分目录）
+**生成笔记前必读 `spec\user_prefs.md`**：遵循用户偏好（笔记语言 / 费曼题密度 / 是否保留附录 / 目录组织）。
 **OCR 文本必须纠错**：识别错字/乱码/误识需结合上下文纠正（可查 `config\ocr_corrections.example.json`），保证专业准确
 
 ### 关键脚本
@@ -49,7 +61,7 @@ python scripts\media_to_notes.py --glm yes|no
 - 📚 概述 / 学习目标 / 前置知识
 - 🧠 核心知识点（每个含：定义 / 通俗类比 / 原理 / 示例 / 💡为什么重要 / ⚠️易错点）
 - 📖 专业词汇表（英文 | 中文 | 通俗解释 | 视频原句）
-- **❓ 费曼思考题：每个知识点末尾按重要程度配题 —— 核心 10 道 / 重要 8 道 / 一般 6 道**
+- **❓ 费曼思考题：每个知识点末尾按重要程度配题（密度见 `spec\user_prefs.md`，默认核心10 / 重要8 / 一般6）**
 - `---` 分隔线 + 📄 完整转写附录（AI 核对用）
 - 风格铁律：**特别详细 / 清晰有条理 / 通俗易懂(类比) / 专业准确(保留中英术语) / 可教学**
 

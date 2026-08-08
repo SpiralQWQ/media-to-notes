@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/SpiralQWQ/media-to-notes/releases"><img src="https://img.shields.io/badge/version-0.1.0-blue" alt="version"></a>
+  <a href="https://github.com/SpiralQWQ/media-to-notes/releases"><img src="https://img.shields.io/badge/version-0.2.0-blue" alt="version"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-3776AB" alt="Python 3.10+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL%203.0%20%7C%20Commercial-blue" alt="license"></a>
   <a href="#"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="platform"></a>
@@ -109,9 +109,17 @@ Steps:
 
    The ASR stack (funasr, modelscope) and OCR stack (paddleocr, rapidocr-onnxruntime) are heavy. They can live in dedicated venvs — point `DD_ASR_PY` / `DD_OCR_PY` / `DD_DL_PY` at the right interpreter, or install everything into one environment and skip those variables.
 
-3. **Install ffmpeg** and add ffmpeg/ffprobe to PATH.
+3. **Run the setup wizard (recommended).**
 
-4. **Configure environment variables.** Copy `.env.example` to `.env`. The scripts load it automatically via `python-dotenv` (already in requirements.txt). All variables are optional — the scripts infer defaults from their own location.
+   ```bash
+   python setup.py
+   ```
+
+   Answer 9 questions (use case / OCR frequency / GLM vision / note language / transcription appendix / Feynman-question density / intermediate files / note organization) and it writes `.env` (read by the scripts) and `spec/user_prefs.md` (followed by Claude when generating notes). **No docs needed up front — answer and go.** Re-run anytime to change settings.
+
+4. **Install ffmpeg** and add ffmpeg/ffprobe to PATH.
+
+5. **Configure environment variables.** Copy `.env.example` to `.env`. The scripts load it automatically via `python-dotenv` (already in requirements.txt). All variables are optional — the scripts infer defaults from their own location. (Skip this step if you used `setup.py` — it already wrote `.env`.)
 
    | Var | Purpose | Default |
    |---|---|---|
@@ -122,16 +130,23 @@ Steps:
    | `DD_OCR_PY` | Python interpreter for OCR scripts (RapidOCR / PaddleOCR) | current interpreter |
    | `DD_YTDLP` | yt-dlp executable (default `yt-dlp`; only needed for non-Douyin links) | `yt-dlp` |
    | `GLM_API_KEY` | BigModel API key, only needed for `--glm yes` | unset |
+   | `OCR_INTERVAL` | video OCR frequency: seconds (`1`=1 fps, `0.5`=2 fps) or `scene`=on change / `no`=off | `1` |
+   | `GLM_MODE` | GLM vision: `yes`=key-frames only (cheap) / `all`=every frame (expensive) / `no`=off | `no` |
+   | `NOTE_LANG` | note body language: `zh`=Chinese / `en`=English / `auto`=follow content | `zh` |
+   | `KEEP_APPENDIX` | keep full transcription appendix at note end: `true` / `false` | `true` |
+   | `FEYNMAN_DENSITY` | Feynman question density: `10`=10/8/6, `6`=6/4/3, `0`=none | `6` |
+   | `KEEP_MIDDLE` | keep intermediate files in cache: `true` / `false` | `true` |
+   | `NOTE_ORGANIZE` | note directory: `date`=by date / `topic`=by course/subject | `date` |
 
-5. **Install the Douyin downloader.** Clone [jiji262/douyin-downloader](https://github.com/jiji262/douyin-downloader) into the repo root so `douyin-downloader/run.py` exists (or set `DD_DL_SRC` to its source directory):
+6. **Install the Douyin downloader.** Clone [jiji262/douyin-downloader](https://github.com/jiji262/douyin-downloader) into the repo root so `douyin-downloader/run.py` exists (or set `DD_DL_SRC` to its source directory):
 
    ```bash
    git clone https://github.com/jiji262/douyin-downloader.git
    ```
 
-6. **Set the Douyin Cookie.** The downloader needs a login cookie. Run `scripts/get_douyin_cookie.bat` (it opens a browser to log in and saves the cookie to `douyin-downloader/config.yml`, local only) or follow that repository's README. When it expires, re-run the helper — no re-install needed.
+7. **Set the Douyin Cookie.** The downloader needs a login cookie. Run `scripts/get_douyin_cookie.bat` (it opens a browser to log in and saves the cookie to `douyin-downloader/config.yml`, local only) or follow that repository's README. When it expires, re-run the helper — no re-install needed.
 
-7. **Optional: get a `GLM_API_KEY`** from the BigModel open platform if you plan to use `--glm yes`.
+8. **Optional: get a `GLM_API_KEY`** from the BigModel open platform if you plan to use `--glm yes`.
 
 > For YouTube / Bilibili / other links, also install `yt-dlp` (`pip install yt-dlp`). Local video/image/text paths need no downloader.
 

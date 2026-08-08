@@ -16,6 +16,17 @@
 任意内容 → AI 教材学习笔记。来源：抖音 / YouTube / B站 / 本地文件。
 丢一个链接或本地路径，自动完成 下载 → 转写/OCR → 生成"喂给 AI 教学"的 AI 教材笔记，写入 `NoteBooks/`。
 
+## 🚀 开箱即用（拉取后第一步）
+
+**先跑配置向导，回答几个问题就能用，无需提前看文档：**
+
+```powershell
+python setup.py
+```
+
+向导问 9 个问题（使用场景 / OCR 频率 / GLM 视觉 / 笔记语言 / 转写附录 / 费曼题密度 / 中间产物 / 笔记组织），
+自动生成 `.env`（脚本运行时读）和 `spec/user_prefs.md`（Claude 生成笔记时遵循）。
+
 ## 触发方式
 
 用户丢一个链接或本地路径（视频/图集/文本）即自动进入"内容 → AI 教材笔记"全流程，无需明说。
@@ -45,7 +56,8 @@ python scripts\media_to_notes.py --glm yes|no
 
 ### 阶段3：生成 AI 教材
 
-Claude 读取 转写 JSON / OCR 文本 / GLM 描述 → 按 `spec/note_style_spec.md` 生成 AI 教材笔记 → 写入 `NoteBooks\{日期}\{顺序}_{日期}_{概要}_{大小}.md`。
+**生成前必读 `spec/user_prefs.md`**（用户偏好：笔记语言/费曼题密度/是否保留附录/目录组织——由 setup.py 生成）。
+Claude 读取 转写 JSON / OCR 文本 / GLM 描述 → 按 `spec/note_style_spec.md` + `spec/user_prefs.md` 生成 AI 教材笔记 → 写入 `NoteBooks\{日期}\{顺序}_{日期}_{概要}_{大小}.md`（若 .env 设 `NOTE_ORGANIZE=topic` 则按课程/主题分目录）。
 
 ## 内容类型分支表
 

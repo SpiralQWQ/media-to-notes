@@ -370,9 +370,27 @@ def process(glm: str) -> None:
             sys.exit("转写失败")
         # ② 多帧 OCR(必做) + 可选 GLM
         vtxt = os.path.join(st["vdir"], f"{st['summary']}_visual.txt")
-        print("[2/3] 多帧视觉分析 (OCR默认" + ("+GLM" if glm == "yes" else "") + ")...")
-        rr = run([OCR_PY, os.path.join(SCRIPTS, "video_frames_ocr.py"), st["video"],
-                  "--interval", "1", "--glm", glm, "--out", vtxt], cwd=".", timeout=7200)
+        # 从 .env 读取 OCR 频率（OCR_INTERVAL：秒数或 "scene"）与 GLM 模式（GLM_MODE：yes/all/no）
+        _ocr = os.environ.get("OCR_INTERVAL", "1")
+        _glm_env = os.environ.get("GLM_MODE", "")
+        if glm == "yes":  # 命令行显式 yes 优先
+            _glm_used = "yes"
+        elif _glm_env == "all":
+            _glm_used = "yes"   # all=每帧，但脚本只支持 key-frame；all 也按 yes 处理（scene 选帧）
+        elif _glm_env == "yes":
+            _glm_used = "yes"
+        else:
+            _glm_used = "no"
+        print("[2/3] 多帧视觉分析 (OCR " + _ocr + "s" + ("+GLM" if _glm_used == "yes" else "") + ")...")
+        _ocr_args = []
+        if _ocr == "scene":
+            _ocr_args = ["--mode", "scene"]
+        elif _ocr != "no":
+            _ocr_args = ["--interval", _ocr]
+        else:
+            _ocr_args = ["--interval", "999999"]  # no=基本不抽帧
+        rr = run([OCR_PY, os.path.join(SCRIPTS, "video_frames_ocr.py"), st["video"]]
+                  + _ocr_args + ["--glm", _glm_used, "--out", vtxt], cwd=".", timeout=7200)
         if rr.returncode != 0:
             print(_san(rr.stdout[-1000:])); print(_san(rr.stderr[-1000:]))
             sys.exit("视频视觉分析失败")

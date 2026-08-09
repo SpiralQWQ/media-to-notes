@@ -349,7 +349,7 @@ $$O(n \log n)$$
 
 ## 九、参考资料
 
-- **MinerU 文档**：`E:\AAA.Program\CC\AAA.Tool\Python_Venvs\T.MinerU_DocParser_Env_v3.4\Docs\`
+- **MinerU 文档**：见 [MinerU 官方文档](https://mineru.net/docs)（本地安装版手册随 MinerU 环境自带）
 - **TableMaster**：https://github.com/minend/TableMaster
 - **LaTeX-OCR**：https://github.com/lukas-blecher/LaTeX-OCR
 - **UniMERNet**：https://github.com/opendatalab/UniMERNet

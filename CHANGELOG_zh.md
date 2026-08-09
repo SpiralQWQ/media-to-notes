@@ -1,6 +1,10 @@
 # 变更日志
 本项目所有重要变更都记录在此，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，版本遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [0.2.1] — 2026-08-09
+
+- **Fixed** 视频 OCR 线程占用：`RapidOCR(intra_op_num_threads=2, inter_op_num_threads=1)` 官方限线程——实测比默认 95 线程**更快 33%** 且 CPU 占用降 96%（环境变量对 onnxruntime 无效，必须官方 config 参数）
+
 ## [0.2.0] — 2026-08-08
 
 - **Added** 开箱即用配置向导 `setup.py`：拉取后跑 `python setup.py`，回答 9 个问题（使用场景/OCR频率/GLM视觉/笔记语言/转写附录/费曼题密度/中间产物/笔记组织）即自动生成 `.env` + `spec/user_prefs.md`，无需提前看文档

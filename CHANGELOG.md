@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to media-to-notes are documented here, following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] — 2026-08-09
+
+- **Fixed** Video OCR thread usage: `RapidOCR(intra_op_num_threads=2, inter_op_num_threads=1)` official thread limit — measured **33% faster** than the default 95 threads with 96% less CPU (env vars don't affect onnxruntime; the official config params are required)
+
 ## [0.2.0] — 2026-08-08
 
 - **Added** Out-of-the-box setup wizard `setup.py`: clone, run `python setup.py`, answer 9 questions (use case / OCR frequency / GLM vision / note language / transcription appendix / Feynman density / intermediate files / note organization), and it writes `.env` + `spec/user_prefs.md` automatically — no docs required up front

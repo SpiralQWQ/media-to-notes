@@ -9,7 +9,7 @@ All notable changes to media-to-notes are documented here, following [Keep a Cha
 
 - **Fixed** Privacy: `优化方向/README.md` stripped leftover internal environment references
 - **Fixed** GBK console compatibility: all six sub-scripts now reconfigure stdout/stderr to UTF-8, so Chinese and emoji print cleanly on a Chinese Windows console (matches the main scripts)
-- **Added** `--glm all` (video): `GLM_MODE=all` now truly analyzes **every** frame with GLM as documented — previously it silently fell back to key-frame analysis
+- **Added** `GLM_MODE=all` now truly analyzes **every** frame with GLM (`video_frames_ocr.py` supports `--glm all`) — previously it silently fell back to key-frame analysis
 - **Added** Open-source community files: `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `.gitattributes`, `.github/` (issue & PR templates, `FUNDING.yml`), and a GitHub Actions CI that syntax-checks every push/PR
 - **Fixed** `--glm no` now overrides `.env` `GLM_MODE`: the documented "free mode" switch works as expected
 - **Fixed** `notes_pipeline.py`: usage and docstring now match behavior — the video argument is legacy and ignored (new 2-arg form is primary, old 3-arg form still accepted)

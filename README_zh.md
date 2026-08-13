@@ -1,9 +1,4 @@
 <p align="center">
-  <!-- 封面占位：可放 assets/cover.png（推荐 1280×640）并取消下行注释 -->
-  <!-- <img src="assets/cover.png" alt="media-to-notes" width="800"> -->
-</p>
-
-<p align="center">
   <a href="README.md"><kbd>🇺🇸 English</kbd></a> · <kbd>🇨🇳 中文</kbd>
 </p>
 
@@ -25,9 +20,9 @@
 
 <p align="center">
   来源支持：抖音 · YouTube · B站 · 本地文件 ｜ <a href="https://github.com/SpiralQWQ/media-to-notes">GitHub</a> · <a href="https://gitee.com/Spiral_QWQ/media-to-notes">Gitee 镜像</a>
-
-**目前仅支持抖音视频、图片、文本和本地视频、图片、文本的转写，其余平台还未测试，敬请期待**
 </p>
+
+<p align="center"><b>目前仅支持抖音视频、图片、文本和本地视频、图片、文本的转写，其余平台还未测试，敬请期待</b></p>
 
 ## 🚀 快速开始
 
@@ -132,7 +127,7 @@ pip install -r requirements.txt
 python setup.py
 ```
 
-回答 9 个问题（使用场景 / OCR 频率 / GLM 视觉 / 笔记语言 / 转写附录 / 费曼题密度 / 中间产物 / 笔记组织），自动生成 `.env`（脚本运行时读）和 `spec/user_prefs.md`（Claude 生成笔记时遵循）。**无需提前看文档，答完即用。** 之后随时可重跑修改配置。
+回答 9 个问题（使用场景 / 数据根目录 / OCR 频率 / GLM 视觉 / 笔记语言 / 转写附录 / 费曼题密度 / 中间产物 / 笔记组织），自动生成 `.env`（脚本运行时读）和 `spec/user_prefs.md`（Claude 生成笔记时遵循）。**无需提前看文档，答完即用。** 之后随时可重跑修改配置。
 
 ### 第四步 —— 安装 ffmpeg
 

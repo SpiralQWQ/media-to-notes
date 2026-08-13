@@ -6,7 +6,7 @@
   <a href="https://github.com/SpiralQWQ/media-to-notes/releases"><img src="https://img.shields.io/github/v/tag/SpiralQWQ/media-to-notes?label=version" alt="version"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-3776AB" alt="Python 3.10+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL%203.0%20%7C%20Commercial-blue" alt="license"></a>
-  <a href="#"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="platform"></a>
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="platform">
   <a href="https://github.com/SpiralQWQ/media-to-notes/stargazers"><img src="https://img.shields.io/github/stars/SpiralQWQ/media-to-notes?style=social" alt="stars"></a>
   <a href="https://github.com/SpiralQWQ/media-to-notes/forks"><img src="https://img.shields.io/github/forks/SpiralQWQ/media-to-notes?style=social" alt="forks"></a>
 </p>
@@ -127,7 +127,7 @@ Steps:
    python setup.py
    ```
 
-   Answer 9 questions (use case / OCR frequency / GLM vision / note language / transcription appendix / Feynman-question density / intermediate files / note organization) and it writes `.env` (read by the scripts) and `spec/user_prefs.md` (followed by Claude when generating notes). **No docs needed up front — answer and go.** Re-run anytime to change settings.
+   Answer 9 questions (use case / data root / OCR frequency / GLM vision / note language / transcription appendix / Feynman-question density / intermediate files / note organization) and it writes `.env` (read by the scripts) and `spec/user_prefs.md` (followed by Claude when generating notes). **No docs needed up front — answer and go.** Re-run anytime to change settings.
 
 4. **Install ffmpeg** and add ffmpeg/ffprobe to PATH.
 

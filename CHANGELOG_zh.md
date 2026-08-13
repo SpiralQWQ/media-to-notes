@@ -9,7 +9,7 @@
 
 - **Fixed** 隐私：`优化方向/README.md` 剔除残留的内部环境引用
 - **Fixed** GBK 控制台兼容：6 个子脚本补齐 stdout/stderr 编码转换，中文 Windows 控制台打印中文/emoji 不乱码、不报错（与主脚本一致）
-- **Added** `--glm all`（视频）：`GLM_MODE=all` 现在真正对**每一帧**做 GLM 分析（与原文档一致）——此前会静默退回关键帧分析
+- **Added** `GLM_MODE=all` 现在真正对**每一帧**做 GLM 分析（`video_frames_ocr.py` 支持 `--glm all`）——此前会静默退回关键帧分析
 - **Added** 开源社区规范文件：`CONTRIBUTING.md` / `SECURITY.md` / `CODE_OF_CONDUCT.md` / `.gitattributes` / `.github/`（Issue 与 PR 模板、`FUNDING.yml`），以及每次 push/PR 自动语法检查的 GitHub Actions CI
 - **Fixed** `--glm no` 现在会覆盖 `.env` 的 `GLM_MODE`：文档承诺的「免费模式开关」真正生效
 - **Fixed** `notes_pipeline.py`：用法与文档与实际行为一致——视频参数为兼容保留、不再使用（新 2 参为主，旧 3 参仍兼容）

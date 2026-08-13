@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to media-to-notes are documented here, following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+- **Docs** Removed the internal planning folder `优化方向/` from the repo (kept local, git-ignored) and replaced it with a polished bilingual [ROADMAP.md](ROADMAP.md) on the public roadmap
+
 ## [0.2.2] — 2026-08-13
 
 - **Fixed** Privacy: `优化方向/README.md` stripped leftover internal environment references

@@ -254,7 +254,7 @@ media-to-notes/
 │   ├── ocr_corrections.example.json # OCR misread dictionary (copy to scripts/)
 │   └── README.md
 ├── setup.py                       # out-of-the-box setup wizard (writes .env)
-├── 优化方向/                       # planning notes for future OCR upgrades
+├── ROADMAP.md                     # planned improvements & priorities
 ├── .env.example                   # all env vars optional
 ├── requirements.txt
 ├── SKILL.md

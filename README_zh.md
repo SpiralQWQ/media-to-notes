@@ -253,7 +253,7 @@ media-to-notes/
 ├── spec/
 │   └── note_style_spec.md             # AI 教材笔记风格规范
 ├── setup.py                           # 开箱即用配置向导（生成 .env）
-├── 优化方向/                           # 未来 OCR 升级规划（MinerU 借鉴）
+├── ROADMAP.md                         # 规划中的改进方向与优先级
 ├── SKILL.md                           # Claude 技能（丢链接自动触发）
 ├── .env.example                       # 环境变量示例（全部可省略）
 ├── requirements.txt

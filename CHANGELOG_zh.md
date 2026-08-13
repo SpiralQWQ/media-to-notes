@@ -1,6 +1,10 @@
 # 变更日志
 本项目所有重要变更都记录在此，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，版本遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [Unreleased]
+
+- **Docs** 仓库移除内部规划笔记 `优化方向/`（本地保留、git 忽略），改造为公开的双语 [ROADMAP.md](ROADMAP.md)
+
 ## [0.2.2] — 2026-08-13
 
 - **Fixed** 隐私：`优化方向/README.md` 剔除残留的内部环境引用

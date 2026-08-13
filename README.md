@@ -1,9 +1,4 @@
 <p align="center">
-  <!-- Cover placeholder: add assets/cover.png (1280x640) and uncomment the line below -->
-  <!-- <img src="assets/cover.png" alt="media-to-notes" width="800"> -->
-</p>
-
-<p align="center">
   <kbd>English</kbd> · <kbd><a href="README_zh.md">简体中文</a></kbd>
 </p>
 

@@ -319,7 +319,7 @@ ASR 错听往 `config/corrections.example.json`（复制为 `scripts/corrections
 
 ## Changelog
 
-完整变更记录见 [CHANGELOG.md](CHANGELOG.md)。当前版本 0.2.1（2026-08-09）。
+完整变更记录见 [CHANGELOG.md](CHANGELOG.md)。当前版本 0.2.2（2026-08-13）。
 
 ---
 

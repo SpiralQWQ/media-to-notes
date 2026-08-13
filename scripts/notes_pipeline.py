@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
-"""抖音视频 → Markdown 笔记管线
+"""转写 JSON → 原始转写 Markdown 管线
 
 用法:
-    python notes_pipeline.py <视频.mp4> <转写.json> <输出笔记.md>
+    python notes_pipeline.py <转写.json> <输出笔记.md>
+    （旧三参形式 <视频.mp4> <转写.json> <输出笔记.md> 仍兼容，视频参数已不使用）
 
 流程:
-    读 FunASR 转写JSON(字符级时间戳, ms) → 按标点切句 → 每句取开始时间
-    → ffmpeg 抽一帧 → 组装 Markdown(时间戳 + 内嵌截图 + 原文)
+    读 FunASR 转写 JSON（text/sentences 带毫秒时间戳）→ 按句末标点切句
+    → 输出带时间戳的原始转写 Markdown（供 AI 教材生成时核对）
 """
 import json
 import os
 import re
 import subprocess
 import sys
+
+try:  # Windows GBK 控制台也能正常打印 emoji/中文，避免 UnicodeEncodeError
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
 
 SENT_END = re.compile(r"[。！？!?；;…]")
 
@@ -107,10 +114,15 @@ def fmt_ts(ms: int) -> str:
 
 
 def main():
-    if len(sys.argv) < 4:
-        print("用法: python notes_pipeline.py <视频.mp4> <转写.json> <输出笔记.md>")
+    if len(sys.argv) < 3:
+        print("用法: python notes_pipeline.py <转写.json> <输出笔记.md>")
+        print("      （旧式 python notes_pipeline.py <视频.mp4> <转写.json> <输出笔记.md> 仍兼容，视频参数已不使用）")
         sys.exit(1)
-    video, tjson, out_md = sys.argv[1], sys.argv[2], sys.argv[3]
+    if len(sys.argv) >= 4:
+        # 旧三参调用：<视频.mp4> <转写.json> <输出笔记.md>，video 为兼容保留，不使用
+        video, tjson, out_md = sys.argv[1], sys.argv[2], sys.argv[3]
+    else:
+        tjson, out_md = sys.argv[1], sys.argv[2]
 
     try:
         with open(tjson, encoding="utf-8") as f:

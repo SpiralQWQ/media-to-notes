@@ -33,3 +33,6 @@ scripts/ocr_corrections.json
 .DS_Store
 Thumbs.db
 spec/user_prefs.md
+
+# 内部验收报告（不入库）
+验收报告/

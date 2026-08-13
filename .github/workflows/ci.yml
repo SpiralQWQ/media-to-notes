@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  syntax-check:
+    name: Python syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Compile all Python scripts
+        run: |
+          python -m py_compile scripts/*.py setup.py
+          echo "All Python files compile OK."
+      - name: Verify key files present
+        run: |
+          test -f scripts/media_to_notes.py
+          test -f scripts/get_douyin_cookie.bat
+          test -f setup.py
+          test -f LICENSE
+          echo "Key files OK."

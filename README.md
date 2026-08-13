@@ -8,10 +8,12 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/SpiralQWQ/media-to-notes/releases"><img src="https://img.shields.io/badge/version-0.2.1-blue" alt="version"></a>
+  <a href="https://github.com/SpiralQWQ/media-to-notes/releases"><img src="https://img.shields.io/github/v/tag/SpiralQWQ/media-to-notes?label=version" alt="version"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-3776AB" alt="Python 3.10+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL%203.0%20%7C%20Commercial-blue" alt="license"></a>
   <a href="#"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="platform"></a>
+  <a href="https://github.com/SpiralQWQ/media-to-notes/stargazers"><img src="https://img.shields.io/github/stars/SpiralQWQ/media-to-notes?style=social" alt="stars"></a>
+  <a href="https://github.com/SpiralQWQ/media-to-notes/forks"><img src="https://img.shields.io/github/forks/SpiralQWQ/media-to-notes?style=social" alt="forks"></a>
 </p>
 
 <h1 align="center">media-to-notes</h1>
@@ -21,6 +23,21 @@
 <p align="center">Sources: Douyin · YouTube · Bilibili · local files &nbsp;|&nbsp; <a href="https://github.com/SpiralQWQ/media-to-notes">GitHub</a> · <a href="https://gitee.com/Spiral_QWQ/media-to-notes">Gitee mirror</a></p>
 
 <p align="center"><b>Status: currently supports Douyin (video / image / text) and local files (video / image / text). Other platforms (YouTube, Bilibili, …) are not yet tested — stay tuned.</b></p>
+
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/SpiralQWQ/media-to-notes.git
+cd media-to-notes
+pip install -r requirements.txt
+python setup.py                    # one-time wizard → writes .env (answer 9 questions)
+python scripts/media_to_notes.py "https://v.douyin.com/XXXXXX" --detect   # download + detect type
+python scripts/media_to_notes.py --glm no                                  # transcribe + OCR (free)
+```
+
+Then hand the generated transcription/OCR text to Claude (or any AI) to write the AI teaching note per `spec/note_style_spec.md` — full flow in [Usage](#usage). Prerequisites (ffmpeg, douyin downloader, login Cookie, optional GLM key) are in [Installation](#installation).
+
+> 🎬 Video · 🖼️ Image album · 📄 Text — from Douyin / YouTube / Bilibili / local files.
 
 ## 💛 Support / Tip
 
@@ -236,11 +253,14 @@ media-to-notes/
 │   ├── corrections.example.json   # ASR mishear dictionary (copy to scripts/)
 │   ├── ocr_corrections.example.json # OCR misread dictionary (copy to scripts/)
 │   └── README.md
+├── setup.py                       # out-of-the-box setup wizard (writes .env)
+├── 优化方向/                       # planning notes for future OCR upgrades
 ├── .env.example                   # all env vars optional
 ├── requirements.txt
 ├── SKILL.md
 ├── CHANGELOG.md / CHANGELOG_zh.md
 ├── LICENSE
+├── COMMERCIAL.md                  # commercial license (dual-license option)
 └── README.md / README_zh.md
 ```
 
@@ -257,7 +277,7 @@ Re-open the jiji262 douyin-downloader cookie-capture helper (the bat it ships) t
 <details>
 <summary><strong>Does GLM vision cost money?</strong></summary>
 
-Only when you pass `--glm yes`. OCR runs on every frame or image and is free. GLM (glm-4.6v-flashx) is a paid API, so it is applied only to key frames — frames whose content changed most, auto-selected by `select_key_frames` — to keep the bill low. Use `--glm no` to skip it entirely; the notes still get full ASR plus OCR.
+Only when you pass `--glm yes`. OCR runs on every frame or image and is free. GLM (glm-4.6v-flashx) is a paid API. By default it is applied only to **key frames** — frames whose content changed most, auto-selected by `select_key_frames` — to keep the bill low. Set `GLM_MODE=all` in `.env` to analyze **every** frame instead (expensive). Use `--glm no` to skip it entirely; the notes still get full ASR plus OCR. Note `--glm no` always wins over `.env` — it is the explicit "free mode" switch.
 </details>
 
 <details>

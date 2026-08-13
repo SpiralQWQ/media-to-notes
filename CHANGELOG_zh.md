@@ -1,9 +1,20 @@
 # 变更日志
 本项目所有重要变更都记录在此，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，版本遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [0.2.2] — 2026-08-13
+
+- **Fixed** 隐私：`优化方向/README.md` 剔除残留的内部环境引用
+- **Fixed** GBK 控制台兼容：6 个子脚本补齐 stdout/stderr 编码转换，中文 Windows 控制台打印中文/emoji 不乱码、不报错（与主脚本一致）
+- **Added** `--glm all`（视频）：`GLM_MODE=all` 现在真正对**每一帧**做 GLM 分析（与原文档一致）——此前会静默退回关键帧分析
+- **Added** 开源社区规范文件：`CONTRIBUTING.md` / `SECURITY.md` / `CODE_OF_CONDUCT.md` / `.gitattributes` / `.github/`（Issue 与 PR 模板、`FUNDING.yml`），以及每次 push/PR 自动语法检查的 GitHub Actions CI
+- **Fixed** `--glm no` 现在会覆盖 `.env` 的 `GLM_MODE`：文档承诺的「免费模式开关」真正生效
+- **Fixed** `notes_pipeline.py`：用法与文档与实际行为一致——视频参数为兼容保留、不再使用（新 2 参为主，旧 3 参仍兼容）
+- **Docs** 开源规范打磨：README(中英) 文件树补全；CHANGELOG 版本链接引用补全；FAQ 与 `GLM_MODE` 描述与真实行为对齐；`README_zh.md` 版本号修正为 0.2.1
+
 ## [0.2.1] — 2026-08-09
 
 - **Fixed** 视频 OCR 线程占用：`RapidOCR(intra_op_num_threads=2, inter_op_num_threads=1)` 官方限线程——实测比默认 95 线程**更快 33%** 且 CPU 占用降 96%（环境变量对 onnxruntime 无效，必须官方 config 参数）
+- **Fixed** 隐私：`优化方向/README.md` 不再引用本地绝对路径——改为官方 MinerU 文档链接
 
 ## [0.2.0] — 2026-08-08
 
@@ -31,4 +42,7 @@
 - **Fixed** 视频视觉分析临时帧目录清理（shutil 导入修复）
 - **Changed** 许可证由 MIT 改为双重许可：AGPL-3.0（开源）+ 商业授权（见 COMMERCIAL.md）
 
+[0.2.2]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.2.2
+[0.2.1]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.2.1
+[0.2.0]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.2.0
 [0.1.0]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.1.0

@@ -12,6 +12,12 @@ import sys
 import urllib.error
 import urllib.request
 
+try:  # Windows GBK 控制台也能正常打印 emoji/中文，避免 UnicodeEncodeError
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 try:  # 允许从仓库根 .env 加载 GLM_API_KEY（可选依赖 python-dotenv）
     from dotenv import load_dotenv
     load_dotenv()

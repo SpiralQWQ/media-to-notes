@@ -6,6 +6,12 @@ import argparse
 import sys
 from pathlib import Path
 
+try:  # Windows GBK 控制台也能正常打印 emoji/中文，避免 UnicodeEncodeError
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 
 def _make_paddle():
     from paddleocr import PaddleOCR

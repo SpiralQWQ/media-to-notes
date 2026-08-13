@@ -1,0 +1,67 @@
+name: Bug report / Bug 报告
+description: Something isn't working as documented / 功能与文档不符
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please fill in as much as you can — it helps us fix it faster.
+        请尽量填写完整，信息越全修复越快。
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command you ran / 你运行的完整命令
+      description: The link or local path and all flags / 链接或本地路径及全部参数
+      placeholder: "python scripts/media_to_notes.py \"https://v.douyin.com/...\" --detect"
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Full error output / 完整错误输出
+      description: Paste the whole terminal output, don't paraphrase / 粘贴完整终端输出
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS / 操作系统
+      description: e.g. Windows 11 / macOS 14 / Ubuntu 22.04
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version / Python 版本
+      placeholder: "3.10 / 3.11 / 3.12"
+    validations:
+      required: true
+  - type: dropdown
+    id: deps
+    attributes:
+      label: How did you install dependencies / 依赖怎么装的
+      options:
+        - pip install -r requirements.txt
+        - separate venvs for ASR/OCR (DD_ASR_PY / DD_OCR_PY)
+        - not sure / 不确定
+    validations:
+      required: true
+  - type: dropdown
+    id: config
+    attributes:
+      label: Did you configure Douyin Cookie and/or GLM_API_KEY? / 是否配置了 Cookie 和 GLM Key？
+      options:
+        - Both / 都配了
+        - Cookie only / 只配了 Cookie
+        - GLM key only / 只配了 GLM Key
+        - Neither / 都没配
+    validations:
+      required: true
+  - type: textarea
+    id: expectation
+    attributes:
+      label: Expected vs actual / 预期与实际
+      description: What you expected to happen vs what happened / 你期望的结果和实际结果
+    validations:
+      required: true

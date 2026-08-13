@@ -12,6 +12,12 @@ import os
 import re
 import sys
 
+try:  # Windows GBK 控制台也能正常打印 emoji/中文，避免 UnicodeEncodeError
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 
 def _load_corrections() -> dict:
     """加载同目录 corrections.json（ASR 纠错词典，如 "get up" → "github"）。"""

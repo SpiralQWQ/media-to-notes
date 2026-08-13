@@ -14,6 +14,12 @@ import os
 import re
 import sys
 
+try:  # Windows GBK 控制台也能正常打印 emoji/中文，避免 UnicodeEncodeError
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 
 def main():
     parser = argparse.ArgumentParser(description="把费曼思考题块拼回笔记对应知识点")

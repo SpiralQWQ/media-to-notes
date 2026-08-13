@@ -1,0 +1,22 @@
+# Normalize line endings on commit, keep them stable across platforms
+* text=auto
+
+# Source & docs: LF everywhere
+*.py      text eol=lf
+*.md      text eol=lf
+*.json    text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.sh      text eol=lf
+*.example text eol=lf
+.gitignore text eol=lf
+
+# Windows batch helper stays CRLF (native for cmd.exe)
+*.bat     text eol=crlf
+
+# Assets: keep as-is
+*.jpg  binary
+*.jpeg binary
+*.png  binary
+*.gif  binary
+*.webp binary

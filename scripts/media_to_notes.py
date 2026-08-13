@@ -373,15 +373,12 @@ def process(glm: str) -> None:
         # 从 .env 读取 OCR 频率（OCR_INTERVAL：秒数或 "scene"）与 GLM 模式（GLM_MODE：yes/all/no）
         _ocr = os.environ.get("OCR_INTERVAL", "1")
         _glm_env = os.environ.get("GLM_MODE", "")
-        if glm == "yes":  # 命令行显式 yes 优先
-            _glm_used = "yes"
-        elif _glm_env == "all":
-            _glm_used = "yes"   # all=每帧，但脚本只支持 key-frame；all 也按 yes 处理（scene 选帧）
-        elif _glm_env == "yes":
-            _glm_used = "yes"
-        else:
+        if glm == "no":            # 命令行 no：明确关闭 GLM（覆盖 .env，省钱/免费模式）
             _glm_used = "no"
-        print("[2/3] 多帧视觉分析 (OCR " + _ocr + "s" + ("+GLM" if _glm_used == "yes" else "") + ")...")
+        else:                      # 命令行 yes：GLM_MODE 决定粒度（all=每帧 / 其他=关键帧）
+            _glm_used = "all" if _glm_env == "all" else "yes"
+        _glm_label = {"no": "", "yes": "+GLM(关键帧)", "all": "+GLM(全帧)"}[_glm_used]
+        print("[2/3] 多帧视觉分析 (OCR " + _ocr + "s" + _glm_label + ")...")
         _ocr_args = []
         if _ocr == "scene":
             _ocr_args = ["--mode", "scene"]

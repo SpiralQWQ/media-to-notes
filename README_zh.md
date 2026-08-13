@@ -8,10 +8,12 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.1-blue" alt="Version">
+  <a href="https://github.com/SpiralQWQ/media-to-notes/releases"><img src="https://img.shields.io/github/v/tag/SpiralQWQ/media-to-notes?label=version" alt="Version"></a>
   <img src="https://img.shields.io/badge/python-3.10+-green" alt="Python">
   <img src="https://img.shields.io/badge/license-AGPL%203.0%20%7C%20Commercial-blue" alt="License">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="Platform">
+  <a href="https://github.com/SpiralQWQ/media-to-notes/stargazers"><img src="https://img.shields.io/github/stars/SpiralQWQ/media-to-notes?style=social" alt="Stars"></a>
+  <a href="https://github.com/SpiralQWQ/media-to-notes/forks"><img src="https://img.shields.io/github/forks/SpiralQWQ/media-to-notes?style=social" alt="Forks"></a>
 </p>
 
 <h1 align="center">media-to-notes</h1>
@@ -26,6 +28,21 @@
 
 **目前仅支持抖音视频、图片、文本和本地视频、图片、文本的转写，其余平台还未测试，敬请期待**
 </p>
+
+## 🚀 快速开始
+
+```bash
+git clone https://github.com/SpiralQWQ/media-to-notes.git
+cd media-to-notes
+pip install -r requirements.txt
+python setup.py                    # 一次性配置向导 → 生成 .env（回答 9 个问题即可）
+python scripts/media_to_notes.py "https://v.douyin.com/XXXXXX" --detect   # 下载 + 检测类型
+python scripts/media_to_notes.py --glm no                                  # 转写 + OCR（免费）
+```
+
+然后把生成的转写/OCR 文本交给 Claude（或任意 AI）按 `spec/note_style_spec.md` 生成 AI 教材笔记——完整流程见 [Usage](#usage)。前置依赖（ffmpeg、抖音下载器、登录 Cookie、可选 GLM Key）见 [Installation](#installation)。
+
+> 🎬 视频 · 🖼️ 图集 · 📄 文本 —— 来源：抖音 / YouTube / B站 / 本地文件。
 
 ## 💛 支持一下
 
@@ -235,10 +252,13 @@ media-to-notes/
 │   └── README.md                      # 配置使用说明
 ├── spec/
 │   └── note_style_spec.md             # AI 教材笔记风格规范
+├── setup.py                           # 开箱即用配置向导（生成 .env）
+├── 优化方向/                           # 未来 OCR 升级规划（MinerU 借鉴）
 ├── SKILL.md                           # Claude 技能（丢链接自动触发）
 ├── .env.example                       # 环境变量示例（全部可省略）
 ├── requirements.txt
-├── LICENSE                            # AGPL-3.0（开源）+ COMMERCIAL.md（商业授权）
+├── LICENSE                            # AGPL-3.0（开源）
+├── COMMERCIAL.md                      # 商业授权（双重许可的闭源选项）
 ├── CHANGELOG.md / CHANGELOG_zh.md
 └── README.md / README_zh.md
 ```
@@ -268,7 +288,7 @@ DD_BASE/
 <details>
 <summary><b>GLM 要花钱吗？</b></summary>
 
-ASR 与 OCR 全部免费在本地运行。GLM 视觉分析（glm-4.6v-flashx）按量计费，只在 `--glm yes` 时调用，且仅分析关键帧或图集逐张。不填 `GLM_API_KEY` 无法开启。
+ASR 与 OCR 全部免费在本地运行。GLM 视觉分析（glm-4.6v-flashx）按量计费。默认 `--glm yes` 只分析**关键帧**（画面差异自动选帧）省费用；在 `.env` 设 `GLM_MODE=all` 则**每一帧**都分析（很贵，长视频慎用）。`--glm no` 完全不用 GLM，且会覆盖 `.env` 里的设置（省钱/免费模式）。不填 `GLM_API_KEY` 无法开启。
 </details>
 
 <details>
@@ -299,7 +319,7 @@ ASR 错听往 `config/corrections.example.json`（复制为 `scripts/corrections
 
 ## Changelog
 
-完整变更记录见 [CHANGELOG.md](CHANGELOG.md)。当前版本 0.1.0（2026-08-03 首发）。
+完整变更记录见 [CHANGELOG.md](CHANGELOG.md)。当前版本 0.2.1（2026-08-09）。
 
 ---
 

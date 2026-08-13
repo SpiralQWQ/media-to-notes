@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """视频关键帧视觉分析：抽帧 → OCR(默认,多帧上限1200) + 可选 GLM 视觉理解。
 
-用法: python video_frames_ocr.py <视频.mp4> [--mode fixed|scene] [--interval 1] [--glm yes] [--out 输出.txt]
+用法: python video_frames_ocr.py <视频.mp4> [--mode fixed|scene] [--interval 1] [--glm yes|all] [--out 输出.txt]
 
 - 抽帧模式:
   - fixed(默认): 每 --interval 秒抽一帧(默认1s, 无上限)
   - scene(进阶): 画面变化才抽帧(场景切换检测, 更省不冗余), 附最大间隔兜底
 - OCR: 默认对每帧识别画面文字(免费, RapidOCR 轻量引擎)
-- GLM: --glm yes 时再对每帧调用 glm-4.6v-flashx 描述画面含义(花钱,需先征得用户同意)
+- GLM: --glm yes 时对"关键帧"(画面变化大)调用 glm-4.6v-flashx 描述画面含义(花钱,需先征得用户同意);
+       --glm all 时对每一帧都分析(更贵,不推荐长视频)
 """
 import argparse
 import atexit
@@ -18,6 +19,12 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+try:  # Windows GBK 控制台也能正常打印 emoji/中文，避免 UnicodeEncodeError
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
 
 GLM_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "glm_vision.py")
 MAX_FRAMES = 1200  # 单视频抽帧上限，防超长视频耗尽 CPU/内存/超时
@@ -126,7 +133,8 @@ def main():
     parser.add_argument("--interval", type=float, default=1.0, help="fixed模式每N秒抽一帧(默认1)")
     parser.add_argument("--threshold", type=float, default=18.0, help="scene模式画面差异阈值(默认18)")
     parser.add_argument("--max-interval", type=float, default=5.0, help="scene模式最大间隔兜底(秒)")
-    parser.add_argument("--glm", choices=["yes", "no"], default="no", help="是否开启GLM视觉理解")
+    parser.add_argument("--glm", choices=["yes", "no", "all"], default="no",
+                        help="GLM视觉理解: no=不用 / yes=只关键帧(省钱) / all=每帧都分析(贵)")
     parser.add_argument("--out")
     args = parser.parse_args()
 
@@ -174,10 +182,14 @@ def main():
             block.append("[画面文字 OCR] (无明显文字)")
         sections.append("\n".join(block))
 
-    # 可选 GLM 视觉理解(glm-4.6v-flashx): 只对"关键帧"(画面变化大)调用, 省费用
-    if args.glm == "yes":
-        keys = select_key_frames(frames, args.threshold, args.max_interval)
-        print(f"[INFO] GLM 只分析 {len(keys)}/{len(frames)} 个关键帧 (阈值{args.threshold}, 最大间隔{args.max_interval}s)")
+    # 可选 GLM 视觉理解(glm-4.6v-flashx): yes=只关键帧(画面变化大)省钱; all=每帧全分析(贵)
+    if args.glm in ("yes", "all"):
+        if args.glm == "all":
+            keys = list(range(len(frames)))
+            print(f"[INFO] GLM 分析全部 {len(frames)} 帧（all 模式，费用较高）")
+        else:
+            keys = select_key_frames(frames, args.threshold, args.max_interval)
+            print(f"[INFO] GLM 只分析 {len(keys)}/{len(frames)} 个关键帧 (阈值{args.threshold}, 最大间隔{args.max_interval}s)")
         for i in keys:
             ts, fp = frames[i]
             try:

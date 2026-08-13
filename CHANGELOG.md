@@ -1,9 +1,20 @@
 # Changelog
 All notable changes to media-to-notes are documented here, following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.2.2] — 2026-08-13
+
+- **Fixed** Privacy: `优化方向/README.md` stripped leftover internal environment references
+- **Fixed** GBK console compatibility: all six sub-scripts now reconfigure stdout/stderr to UTF-8, so Chinese and emoji print cleanly on a Chinese Windows console (matches the main scripts)
+- **Added** `--glm all` (video): `GLM_MODE=all` now truly analyzes **every** frame with GLM as documented — previously it silently fell back to key-frame analysis
+- **Added** Open-source community files: `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `.gitattributes`, `.github/` (issue & PR templates, `FUNDING.yml`), and a GitHub Actions CI that syntax-checks every push/PR
+- **Fixed** `--glm no` now overrides `.env` `GLM_MODE`: the documented "free mode" switch works as expected
+- **Fixed** `notes_pipeline.py`: usage and docstring now match behavior — the video argument is legacy and ignored (new 2-arg form is primary, old 3-arg form still accepted)
+- **Docs** Open-source polish: README (EN/ZH) file tree completed; CHANGELOG version-link references added; FAQ & `GLM_MODE` descriptions aligned with real behavior; `README_zh.md` version number corrected to 0.2.1
+
 ## [0.2.1] — 2026-08-09
 
 - **Fixed** Video OCR thread usage: `RapidOCR(intra_op_num_threads=2, inter_op_num_threads=1)` official thread limit — measured **33% faster** than the default 95 threads with 96% less CPU (env vars don't affect onnxruntime; the official config params are required)
+- **Fixed** Privacy: `优化方向/README.md` no longer references local absolute paths — switched to the official MinerU docs link
 
 ## [0.2.0] — 2026-08-08
 
@@ -31,4 +42,7 @@ Initial open-source release.
 - **Fixed** Temp-frame directory cleanup in video visual analysis (missing shutil import)
 - **Changed** License from MIT to dual license: AGPL-3.0 (open source) + commercial license (see COMMERCIAL.md)
 
+[0.2.2]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.2.2
+[0.2.1]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.2.1
+[0.2.0]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.2.0
 [0.1.0]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.1.0

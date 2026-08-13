@@ -198,7 +198,7 @@ GLM 理解："这是一个教程截图，包含..."
 ### 4.1 依赖安装
 
 ```bash
-# 在 T.PaddleOCR_Env 或新建环境
+# 在新建的 OCR 虚拟环境中安装（或直接复用已有的 OCR 环境）
 pip install tablemaster  # 或从 ModelScope 下载
 pip install rapidocr-onnxruntime  # 已有
 ```

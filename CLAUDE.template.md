@@ -39,11 +39,11 @@ python setup.py
 ### 阶段1：检测（下载 + 识别类型）
 
 ```powershell
-python scripts\media_to_notes.py "<链接>" --detect
+python scripts/media_to_notes.py "<链接>" --detect
 ```
 
 抖音用 jiji262 douyin-downloader（去水印，需 Cookie）；YouTube/B站用 yt-dlp；本地视频/图片/文本直接用路径。
-执行链路：下载 → 判断 🎬视频 / 🖼️图集 / 📄文本 → 归位（`视频\` `音频\` / `图片\` / `文本\`）→ 写状态文件（`temp\current_job.json`）→ 报告类型。
+执行链路：下载 → 判断 🎬视频 / 🖼️图集 / 📄文本 → 归位（`视频/` `音频/` `图片/` `文本/`）→ 写状态文件（`temp/current_job.json`）→ 报告类型。
 
 ### 阶段2：询问 GLM 后处理
 
@@ -51,19 +51,19 @@ python scripts\media_to_notes.py "<链接>" --detect
 得到同意后运行：
 
 ```powershell
-python scripts\media_to_notes.py --glm yes|no
+python scripts/media_to_notes.py --glm yes|no
 ```
 
 ### 阶段3：生成 AI 教材
 
 **生成前必读 `spec/user_prefs.md`**（用户偏好：笔记语言/费曼题密度/是否保留附录/目录组织——由 setup.py 生成）。
-Claude 读取 转写 JSON / OCR 文本 / GLM 描述 → 按 `spec/note_style_spec.md` + `spec/user_prefs.md` 生成 AI 教材笔记 → 写入 `NoteBooks\{日期}\{顺序}_{日期}_{概要}_{大小}.md`（若 .env 设 `NOTE_ORGANIZE=topic` 则按课程/主题分目录）。
+Claude 读取 转写 JSON / OCR 文本 / GLM 描述 → 按 `spec/note_style_spec.md` + `spec/user_prefs.md` 生成 AI 教材笔记 → 写入 `NoteBooks/{日期}/{顺序}_{日期}_{概要}_{大小}.md`（若 .env 设 `NOTE_ORGANIZE=topic` 则按课程/主题分目录）。
 
 ## 内容类型分支表
 
 | 类型 | 下载/来源 | 处理链路 | GLM=yes 时（花钱） |
 |---|---|---|---|
-| 🎬 视频 | 抖音 jiji262 / YT·B站 yt-dlp / 本地路径 | FunASR 逐段转写（fsmn-vad 切段 + SenseVoiceSmall）→ 多帧 OCR（默认 1 秒 1 帧、上限 1200 帧、免费） | 只分析关键帧（画面差异自动选帧，省钱） |
+| 🎬 视频 | 抖音 jiji262 / YT·B站 yt-dlp / 本地路径 | FunASR 逐段转写（fsmn-vad 切段 + SenseVoiceSmall）→ 多帧 OCR（默认 1 秒 1 帧、上限 1200 帧、免费） | 只分析关键帧（画面差异自动选帧，省钱）；`.env` 设 `GLM_MODE=all` 则每帧都分析（贵） |
 | 🖼️ 图集 | 抖音 jiji262 / YT·B站 yt-dlp / 本地路径 | 逐张 OCR（PaddleOCR 优先 / RapidOCR 兜底） | 每张图 GLM 描述 |
 | 📄 文本 | 本地路径 | 无下载，Claude 直接整理成 AI 教材 | 不适用 |
 
@@ -126,15 +126,15 @@ type: {来源网站小写}-ai-teaching-note
 
 ## 目录规则（五类统一）
 
-`{类别}\{日期}\{顺序}_{日期}_{概要}_{大小}`，顺序号按当天创建，每日期文件夹独立从 00 开始。
+`{类别}/{日期}/{顺序}_{日期}_{概要}_{大小}`，顺序号按当天创建，每日期文件夹独立从 00 开始。
 
 | 类别 | 位置 |
 |---|---|
-| 视频 | `视频\{日期}\{顺序}_{日期}_{概要}_{大小}\` |
-| 音频 + 转写 | `音频\{日期}\{顺序}_{日期}_{概要}_{大小}\` |
-| 图片 / 图集 | `图片\{日期}\{顺序}_{日期}_{概要}_{大小}\` |
-| 文本 | `文本\{日期}\{顺序}_{日期}_{概要}_{大小}\` |
-| 笔记（AI 教材） | `NoteBooks\{日期}\{顺序}_{日期}_{概要}_{大小}.md` |
+| 视频 | `视频/{日期}/{顺序}_{日期}_{概要}_{大小}/` |
+| 音频 + 转写 | `音频/{日期}/{顺序}_{日期}_{概要}_{大小}/` |
+| 图片 / 图集 | `图片/{日期}/{顺序}_{日期}_{概要}_{大小}/` |
+| 文本 | `文本/{日期}/{顺序}_{日期}_{概要}_{大小}/` |
+| 笔记（AI 教材） | `NoteBooks/{日期}/{顺序}_{日期}_{概要}_{大小}.md` |
 
 ## 配置与故障
 
@@ -161,7 +161,7 @@ copy config\ocr_corrections.example.json scripts\ocr_corrections.json
 
 ASR 纠错示例：`"get up": "github"`（转写管线自动套用）；OCR 词典作为生成笔记时的参考词典（OCR 误识由生成方结合上下文纠正）。词典文件可随时增补。
 
-**抖音 Cookie 过期**：报反爬 / Empty 200 → 运行 `scripts\get_douyin_cookie.bat` 重新抓取登录 Cookie 后重跑。
+**抖音 Cookie 过期**：报反爬 / Empty 200 → 运行 `scripts/get_douyin_cookie.bat` 重新抓取登录 Cookie 后重跑。
 
 **GLM_API_KEY**：`https://open.bigmodel.cn` BigModel 开放平台申请；未设置时 `--glm yes` 报 `[ERR] 未设置 GLM_API_KEY 环境变量`，改用 `--glm no`。
 

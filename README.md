@@ -19,6 +19,24 @@
 
 <p align="center"><b>Status: currently supports Douyin (video / image / text) and local files (video / image / text). Other platforms (YouTube, Bilibili, …) are not yet tested — stay tuned.</b></p>
 
+
+## Table of Contents
+
+- [🚀 Quick Start](#quick-start)
+- [What It Does](#what-it-does)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Note Format](#note-format)
+- [File Tree](#file-tree)
+- [FAQ](#faq)
+- [Changelog](#changelog)
+- [Contributing](#contributing)
+- [License](#license)
+- [Legal / Disclaimer](#legal-disclaimer)
+- [💛 Support / Tip](#support-tip)
+
+
 ## 🚀 Quick Start
 
 ```bash
@@ -33,17 +51,6 @@ python scripts/media_to_notes.py --glm no                                  # tra
 Then hand the generated transcription/OCR text to Claude (or any AI) to write the AI teaching note per `spec/note_style_spec.md` — full flow in [Usage](#usage). Prerequisites (ffmpeg, douyin downloader, login Cookie, optional GLM key) are in [Installation](#installation).
 
 > 🎬 Video · 🖼️ Image album · 📄 Text — from Douyin / YouTube / Bilibili / local files.
-
-## 💛 Support / Tip
-
-If this project has helped you in any way, you're welcome to buy me a coffee. It's completely voluntary — the project stays free and open-source regardless. For an independent developer, every small token of appreciation matters.
-
-<p align="center">
-  <img src="assets/donate_wechat.jpg" alt="WeChat Pay" width="200">
-  <img src="assets/donate_alipay.jpg" alt="Alipay" width="200">
-</p>
-
-<p align="center"><i>Thanks for reading all the way down here. 🙏</i></p>
 
 ## What It Does
 
@@ -317,3 +324,14 @@ Dual-licensed under **AGPL-3.0** or a **commercial license**.
 ## Legal / Disclaimer
 
 This tool is intended for **personal study and research only**. Downloading, watermark-removing, or reusing other people's videos may breach the platform's terms of service and copyright law. You are responsible for complying with the platform's terms and your local laws, respecting the original authors' copyright, and **not** using downloaded content for commercial or public redistribution. The author is not liable for any misuse.
+
+## 💛 Support / Tip
+
+If this project has helped you in any way, you're welcome to buy me a coffee. It's completely voluntary — the project stays free and open-source regardless. For an independent developer, every small token of appreciation matters.
+
+<p align="center">
+  <img src="assets/donate_wechat.jpg" alt="WeChat Pay" width="200">
+  <img src="assets/donate_alipay.jpg" alt="Alipay" width="200">
+</p>
+
+<p align="center"><i>Thanks for reading all the way down here. 🙏</i></p>

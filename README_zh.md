@@ -24,6 +24,24 @@
 
 <p align="center"><b>目前仅支持抖音视频、图片、文本和本地视频、图片、文本的转写，其余平台还未测试，敬请期待</b></p>
 
+
+## Table of Contents
+
+- [🚀 快速开始](#快速开始)
+- [What It Does](#what-it-does)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Note Format](#note-format)
+- [File Tree](#file-tree)
+- [FAQ](#faq)
+- [Changelog](#changelog)
+- [Contributing](#contributing)
+- [License（许可）](#license许可)
+- [法律声明 / 免责声明](#法律声明-免责声明)
+- [💛 支持一下](#支持一下)
+
+
 ## 🚀 快速开始
 
 ```bash
@@ -38,17 +56,6 @@ python scripts/media_to_notes.py --glm no                                  # 转
 然后把生成的转写/OCR 文本交给 Claude（或任意 AI）按 `spec/note_style_spec.md` 生成 AI 教材笔记——完整流程见 [Usage](#usage)。前置依赖（ffmpeg、抖音下载器、登录 Cookie、可选 GLM Key）见 [Installation](#installation)。
 
 > 🎬 视频 · 🖼️ 图集 · 📄 文本 —— 来源：抖音 / YouTube / B站 / 本地文件。
-
-## 💛 支持一下
-
-如果这个项目帮到过你，可以请我喝杯咖啡 ☕。打赏全凭心意，不打赏也完全没关系——项目永远免费开源。做开源这么久，每一份小小的支持都能让我高兴很久。
-
-<p align="center">
-  <img src="assets/donate_wechat.jpg" alt="微信收款" width="200">
-  <img src="assets/donate_alipay.jpg" alt="支付宝收款" width="200">
-</p>
-
-<p align="center"><i>能一路读到这里的你，谢谢。🙏</i></p>
 
 ---
 
@@ -336,3 +343,14 @@ Bug 与新网站支持先提 [GitHub Issues](https://github.com/SpiralQWQ/media-
 ## 法律声明 / 免责声明
 
 本工具**仅供个人学习研究使用**。下载、去水印或复用他人视频，可能违反平台服务条款与著作权法。使用者有责任遵守平台条款与当地法律，尊重原作者版权，**不得**将下载内容用于商业或公开传播。作者不对任何滥用行为负责。
+
+## 💛 支持一下
+
+如果这个项目帮到过你，可以请我喝杯咖啡 ☕。打赏全凭心意，不打赏也完全没关系——项目永远免费开源。做开源这么久，每一份小小的支持都能让我高兴很久。
+
+<p align="center">
+  <img src="assets/donate_wechat.jpg" alt="微信收款" width="200">
+  <img src="assets/donate_alipay.jpg" alt="支付宝收款" width="200">
+</p>
+
+<p align="center"><i>能一路读到这里的你，谢谢。🙏</i></p>

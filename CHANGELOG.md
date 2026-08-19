@@ -1,17 +1,14 @@
 # Changelog
 All notable changes to media-to-notes are documented here, following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versioning follows [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
-
-- **Docs** Removed the internal planning folder `优化方向/` from the repo (kept local, git-ignored) and replaced it with a polished bilingual [ROADMAP.md](ROADMAP.md) on the public roadmap
-
 ## [0.3.0] — 2026-08-19
 
 ### Added
 
 - **Cleaning pipeline** (`scripts/clean_timeline.py`): **built-in, zero-config** cleaning — transcript JSON kept-structure cleaning + per-frame visual cleaning (strip UI watermarks / tags / garbled text, keep timestamps), plus plain-text cleaning for image albums / text. No external cleaner dependency.
 - **Timeline interleaving** (`scripts/assemble_md.py`): transcription + frames interleaved by timestamp into a half-ready Markdown — visuals stay aligned with speech.
-- **Upgraded wizard** (`scripts/wizard.py` + `test_wizard.py`): interactive setup for OCR interval / GLM / naming / course rules, answer-and-go.
+- **Upgraded wizard** (`scripts/wizard.py` + `test_wizard.py`): interactive setup for OCR interval / GLM / naming / course rules, answer-and-go. **Dual organize modes** (v0.3.0): `date` (generic, default) or `topic` (course/lecture tree for course videos).
+- **`pyproject.toml`**: package metadata (name/version/license/authors/urls) — script-style tool, keeps `scripts/` direct-run.
 - **Half-ready md in the main flow**: `media_to_notes.py` now cleans and assembles all three branches (video / image album / text) into `*_clean.md`; original artifacts are kept, and the "feed Claude" flow is unchanged.
 - **Tests**: `tests/test_clean.py` + `tests/sample/` — three-branch cleaning tests (video / image album / text, simulated samples, no copyrighted content); run with `python -m unittest tests/test_clean.py`; CI now runs them. Report: `docs/test-report-v0.3.0.md`.
 

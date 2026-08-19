@@ -1,19 +1,17 @@
 # 变更日志
 本项目所有重要变更都记录在此，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，版本遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
-
-- **Docs** 仓库移除内部规划笔记 `优化方向/`（本地保留、git 忽略），改造为公开的双语 [ROADMAP.md](ROADMAP.md)
-
 ## [0.3.0] — 2026-08-19
 
 ### Added
 
 - **清洗管线**（`scripts/clean_timeline.py`）：**内置、零配置**——转写 json 保结构清洗 + 画面逐帧清洗（去界面水印/标签/乱码，保留时间戳）+ 图集/文本通用清洗。无外部清洗引擎依赖。
 - **时间轴交错**（`scripts/assemble_md.py`）：转写 + 画面按时间戳交错成半成品 md，画面与台词对位、不丢失。
-- **升级向导**（`scripts/wizard.py` + `test_wizard.py`）：交互配置 OCR 频率 / GLM / 命名 / 课程规则，答完即用。
+- **升级向导**（`scripts/wizard.py` + `test_wizard.py`）：交互配置 OCR 频率 / GLM / 命名 / 课程规则，答完即用。**双组织模式**（v0.3.0）：`date`（通用日期，默认）或 `topic`（课程/讲次树，课程视频专用）。
 - **主流程半成品 md**：`media_to_notes.py` 三条分支（视频/图集/文本）自动清洗+产出 `*_clean.md`；原产物保留，喂 Claude 流程不变。
+- **`pyproject.toml`**：包元数据（name/version/license/authors/urls）——脚本式工具，保持 `scripts/` 直跑。
 - **测试**：`tests/test_clean.py` + `tests/sample/`——三分支清洗测试（视频/图集/文本，模拟样例、无版权内容）；运行 `python -m unittest tests/test_clean.py`；CI 已接入。报告见 `docs/test-report-v0.3.0.md`。
+- **Docs** 仓库移除内部规划笔记 `优化方向/`（本地保留、git 忽略），改造为公开的双语 [ROADMAP.md](ROADMAP.md)
 
 ### Changed
 

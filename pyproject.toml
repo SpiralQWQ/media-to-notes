@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "media-to-notes"
+version = "0.3.0"
+description = "Turn videos / image albums / text into AI teaching notes — with built-in zero-config cleaning and timeline interleaving"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "AGPL-3.0-or-later" }
+authors = [
+    { name = "SpiralQWQ" },
+]
+keywords = ["video", "notes", "asr", "ocr", "ai-teaching", "transcription", "douyin", "llm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://github.com/SpiralQWQ/media-to-notes"
+Repository = "https://github.com/SpiralQWQ/media-to-notes"
+Issues = "https://github.com/SpiralQWQ/media-to-notes/issues"
+
+[tool.setuptools]
+# 脚本式工具：保持 scripts/ 直跑，不打包安装（pyproject 仅作元数据/可安装声明）
+include-package-data = true

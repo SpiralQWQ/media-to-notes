@@ -28,6 +28,7 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Note Format](#note-format)
+- [Testing](#testing)
 - [File Tree](#file-tree)
 - [FAQ](#faq)
 - [Changelog](#changelog)
@@ -66,6 +67,9 @@ media-to-notes turns a Douyin / YouTube / Bilibili link or a local file into a s
 | 📝 | AI teaching-note generation | Claude reads the transcription/OCR/GLM text and writes the note per `spec/note_style_spec.md` |
 | 📁 | Folder routing | Every item lands in `{category}/{date}/{seq}_{date}_{summary}_{size}`; sequence restarts at 00 each day |
 | ✏️ | Correction dictionaries | `corrections.json` auto-fixes ASR mishears; `ocr_corrections.json` is a reference dictionary used while generating the note (OCR misreads are corrected against context, not auto-applied) |
+| 🧹 | Cleaning engine | JSON kept-structure cleaning + per-frame visual cleaning (strip UI watermarks / tags / garbled text, keep timestamps) |
+| 🕐 | Timeline interleave | Transcription + frames interleaved by timestamp into a half-ready Markdown — visuals stay aligned with speech |
+| 🛠 | Upgraded wizard | `wizard.py` interactive setup (OCR interval / GLM / naming / course rules), answer-and-go |
 
 ## Architecture
 
@@ -83,6 +87,8 @@ media-to-notes turns a Douyin / YouTube / Bilibili link or a local file into a s
           ▼
   detect type ──► 🎬 video ──► ASR (fsmn-vad + SenseVoice)
   │                            + multi-frame OCR ─(+GLM key frames)
+  │                            → clean (built-in: JSON + per-frame visual)
+  │                            → interleave (transcript + frames → half-ready md)
   ├──────────► 🖼️ image album ─► OCR per image ─(+GLM per image)
   │
   └──────────► 📄 text ──► clean and structure directly
@@ -90,8 +96,8 @@ media-to-notes turns a Douyin / YouTube / Bilibili link or a local file into a s
           ▼
   ┌─────────────────────────────────────────────────────────────┐
   │ Stage 2  Claude reads transcription / OCR / GLM text        │
-  │          writes the AI teaching note per                    │
-  │          spec/note_style_spec.md                            │
+  │          (or the half-ready interleaved md) and writes the  │
+  │          AI teaching note per spec/note_style_spec.md       │
   └─────────────────────────────────────────────────────────────┘
           │
           ▼
@@ -236,18 +242,34 @@ Feynman questions are open-ended and drawn from four angles: restate to a beginn
 
 Style rules (mandatory): extremely detailed · clear and structured · plain-language analogies · professionally accurate (keep English terms alongside Chinese) · teachable (an AI can read the note and teach a total beginner from it).
 
+## Testing
+
+Three-branch cleaning tests (video / image album / text) with simulated samples — no external cleaner dependency, zero config:
+
+```bash
+python -m unittest tests/test_clean.py
+```
+
+- Samples: `tests/sample/` (simulated, no copyrighted content)
+- Report: [`docs/test-report-v0.3.0.md`](docs/test-report-v0.3.0.md)
+- CI runs the tests on every push / PR.
+
 ## File Tree
 
 ```
 media-to-notes/
 ├── scripts/
-│   ├── media_to_notes.py          # main two-stage flow: detect + process
-│   ├── transcribe_funasr.py       # SenseVoice segment transcription (fsmn-vad)
-│   ├── video_frames_ocr.py        # video multi-frame OCR + scene / key-frame GLM
+│   ├── media_to_notes.py          # main two-stage flow: detect + process + clean/assemble
+│   ├── transcribe_funasr.py       # SenseVoice segment transcription (fsmn-vad + VAD trim + hotwords)
+│   ├── video_frames_ocr.py        # video multi-frame OCR + reading-order sort + scene / key-frame GLM
 │   ├── ocr_images.py              # per-image OCR (PaddleOCR / RapidOCR)
 │   ├── glm_vision.py              # standalone GLM vision (glm-4.6v-flashx)
 │   ├── notes_pipeline.py          # transcription JSON → raw transcript markdown
 │   ├── splice_feynman.py          # batch-splice pre-generated Feynman blocks into a note
+│   ├── clean_timeline.py          # built-in zero-config cleaning (JSON kept-structure + per-frame visual + plain text)
+│   ├── assemble_md.py             # interleave transcription + frames by timestamp → half-ready md
+│   ├── wizard.py                  # upgraded interactive wizard (OCR / GLM / naming / course rules)
+│   ├── test_wizard.py             # wizard tests
 │   └── get_douyin_cookie.bat      # Douyin login-cookie helper (Windows)
 ├── spec/
 │   └── note_style_spec.md         # AI teaching-note style spec
@@ -255,6 +277,12 @@ media-to-notes/
 │   ├── corrections.example.json   # ASR mishear dictionary (copy to scripts/)
 │   ├── ocr_corrections.example.json # OCR misread dictionary (copy to scripts/)
 │   └── README.md
+├── tests/
+│   ├── test_clean.py              # three-branch cleaning tests (video / album / text)
+│   └── sample/                    # simulated samples (no copyrighted content)
+├── docs/
+│   ├── test-report-v0.3.0.md      # test report
+│   └── acceptance-report-v0.3.0.md # v0.3.0 acceptance report
 ├── setup.py                       # out-of-the-box setup wizard (writes .env)
 ├── ROADMAP.md                     # planned improvements & priorities
 ├── .env.example                   # all env vars optional

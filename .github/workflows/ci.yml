@@ -19,6 +19,9 @@ jobs:
         run: |
           python -m py_compile scripts/*.py setup.py
           echo "All Python files compile OK."
+      - name: Run unit tests (three-branch cleaning)
+        run: |
+          python -m unittest tests/test_clean.py
       - name: Verify key files present
         run: |
           test -f scripts/media_to_notes.py

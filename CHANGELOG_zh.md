@@ -5,6 +5,28 @@
 
 - **Docs** 仓库移除内部规划笔记 `优化方向/`（本地保留、git 忽略），改造为公开的双语 [ROADMAP.md](ROADMAP.md)
 
+## [0.3.0] — 2026-08-19
+
+### Added
+
+- **清洗管线**（`scripts/clean_timeline.py`）：**内置、零配置**——转写 json 保结构清洗 + 画面逐帧清洗（去界面水印/标签/乱码，保留时间戳）+ 图集/文本通用清洗。无外部清洗引擎依赖。
+- **时间轴交错**（`scripts/assemble_md.py`）：转写 + 画面按时间戳交错成半成品 md，画面与台词对位、不丢失。
+- **升级向导**（`scripts/wizard.py` + `test_wizard.py`）：交互配置 OCR 频率 / GLM / 命名 / 课程规则，答完即用。
+- **主流程半成品 md**：`media_to_notes.py` 三条分支（视频/图集/文本）自动清洗+产出 `*_clean.md`；原产物保留，喂 Claude 流程不变。
+- **测试**：`tests/test_clean.py` + `tests/sample/`——三分支清洗测试（视频/图集/文本，模拟样例、无版权内容）；运行 `python -m unittest tests/test_clean.py`；CI 已接入。报告见 `docs/test-report-v0.3.0.md`。
+
+### Changed
+
+- `transcribe_funasr.py`：VAD 静音裁剪、热词注入、置信度估计、口语填充词清理、进度条。
+- `video_frames_ocr.py`：OCR 文字按检测框坐标重排为阅读顺序（上→下、左→右）；依赖预检；进度条。
+- `glm_vision.py` / `notes_pipeline.py` / `ocr_images.py` / `splice_feynman.py`：对齐本地升级。
+- `spec/note_style_spec.md`：规范扩充。
+- 配置加载：向导可写 `scripts/.config/.env`，主流程一并加载。
+
+### Security
+
+- API Key 走环境变量，无硬编码绝对路径。
+
 ## [0.2.2] — 2026-08-13
 
 - **Fixed** 隐私：`优化方向/README.md` 剔除残留的内部环境引用

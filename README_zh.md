@@ -33,6 +33,7 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Note Format](#note-format)
+- [Testing（测试）](#testing测试)
 - [File Tree](#file-tree)
 - [FAQ](#faq)
 - [Changelog](#changelog)
@@ -73,6 +74,9 @@ media-to-notes 把视频、图集和文本自动变成结构化的 AI 教材笔�
 | 📝 | AI 教材生成 | Claude 按 `spec/note_style_spec.md` 生成教材 |
 | 📁 | 目录归位 | 统一 `{类别}/{日期}/{顺序}_{日期}_{概要}_{大小}` 规范 |
 | 🔧 | OCR 纠错 | 纠错词典 + 笔记生成时结合上下文纠正误识 |
+| 🧹 | 清洗引擎 | 转写 json 保结构清洗 + 画面逐帧清洗（去界面水印/标签/乱码，保留时间戳） |
+| 🕐 | 时间轴交错 | 转写 + 画面按时间戳交错成半成品 md，画面不丢失、可与台词对位 |
+| 🛠 | 升级向导 | wizard.py 交互配置（OCR 频率 / GLM / 命名 / 课程规则），答完即用 |
 
 ---
 
@@ -85,11 +89,13 @@ media-to-notes 把视频、图集和文本自动变成结构化的 AI 教材笔�
 阶段1  --detect   下载 → 检测类型 → 归位 → 写状态 → 报告
     │
     ├── 视频 → ASR 逐段转写 → 多帧 OCR → [--glm yes] 关键帧 GLM
+    │              ↓ 清洗（内置）：转写保结构 + 画面逐帧去水印/标签
+    │              ↓ 组装（assemble_md）：转写 + 画面 → 时间轴交错半成品 md
     ├── 图集 → 逐张 OCR → [--glm yes] 每张 GLM 描述
     └── 文本 → 直接整理
     │
     ▼
-阶段3  Claude 读取转写 / OCR / GLM 文本
+阶段3  Claude 读取转写 / OCR / GLM 文本（或半成品 md）
         按 spec/note_style_spec.md 生成 AI 教材
     │
     ▼
@@ -235,23 +241,45 @@ python scripts/media_to_notes.py --glm no
 
 ---
 
+## Testing（测试）
+
+三分支清洗测试（视频 / 图集 / 文本），模拟样例，零配置、无外部清洗引擎依赖：
+
+```bash
+python -m unittest tests/test_clean.py
+```
+
+- 样例：`tests/sample/`（模拟数据，无版权内容）
+- 报告：[`docs/test-report-v0.3.0.md`](docs/test-report-v0.3.0.md)
+- CI 每次 push/PR 自动跑测试
+
 ## File Tree
 
 ```
 media-to-notes/
 ├── scripts/
-│   ├── media_to_notes.py       # 主流程：两阶段（下载检测 + 处理）
-│   ├── transcribe_funasr.py    # SenseVoice 逐段转写（fsmn-vad 分段）
-│   ├── video_frames_ocr.py     # 视频多帧 OCR + 场景检测 + 关键帧 GLM
+│   ├── media_to_notes.py       # 主流程：两阶段（下载检测 + 处理 + 内置清洗组装）
+│   ├── transcribe_funasr.py    # SenseVoice 逐段转写（fsmn-vad 分段 + VAD 裁剪 + 热词）
+│   ├── video_frames_ocr.py     # 视频多帧 OCR + 阅读顺序排序 + 场景检测 + 关键帧 GLM
 │   ├── ocr_images.py           # 图集逐张 OCR
 │   ├── glm_vision.py           # 独立 GLM 视觉理解（glm-4.6v-flashx）
 │   ├── notes_pipeline.py       # 转写 JSON → 原始转写 markdown
 │   ├── splice_feynman.py       # 把预生成的费曼思考题块批量拼回笔记
+│   ├── clean_timeline.py       # 内置零配置清洗（转写保结构 + 画面逐帧 + 图集/文本通用）
+│   ├── assemble_md.py          # 转写 + 画面按时间戳交错 → 半成品 md
+│   ├── wizard.py               # 升级向导（OCR / GLM / 命名 / 课程规则）
+│   ├── test_wizard.py          # 向导测试
 │   └── get_douyin_cookie.bat   # 抖音登录 Cookie 抓取助手（扫码登录）
 ├── config/
 │   ├── corrections.example.json       # ASR 纠错词典示例
 │   ├── ocr_corrections.example.json   # OCR 纠错词典示例
 │   └── README.md                      # 配置使用说明
+├── tests/
+│   ├── test_clean.py                  # 三分支清洗测试（视频/图集/文本）
+│   └── sample/                        # 模拟样例（无版权内容）
+├── docs/
+│   ├── test-report-v0.3.0.md          # 测试报告
+│   └── acceptance-report-v0.3.0.md    # v0.3.0 验收报告
 ├── spec/
 │   └── note_style_spec.md             # AI 教材笔记风格规范
 ├── setup.py                           # 开箱即用配置向导（生成 .env）
@@ -321,7 +349,7 @@ ASR 错听往 `config/corrections.example.json`（复制为 `scripts/corrections
 
 ## Changelog
 
-完整变更记录见 [CHANGELOG.md](CHANGELOG.md)。当前版本 0.2.2（2026-08-13）。
+完整变更记录见 [CHANGELOG.md](CHANGELOG.md)。当前版本 0.3.0（2026-08-19）。
 
 ---
 

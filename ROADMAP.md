@@ -8,9 +8,13 @@ media-to-notes 把视频/图集/文本变成 AI 教材笔记。下面是按优�
 
 ## Current focus / 当前重点
 
-The core pipeline (download → ASR/OCR → note) is stable and released. The current focus is making **visual extraction smarter**: today a video frame or image is OCR'd into plain text, which loses structure (tables, formulas, code).
+The core pipeline (download → ASR/OCR → note) is stable and released. **v0.3.0 (2026-08) added built-in zero-config cleaning** (transcript JSON + per-frame visual + plain text) and **timeline interleaving** (speech + frames aligned by timestamp into a half-ready Markdown), with three-branch tests (`tests/`, report `docs/test-report-v0.3.0.md`).
 
-核心管线（下载 → 转写/OCR → 笔记）已稳定发布。当前重点是**让画面信息提取更聪明**：现在视频帧/图片的 OCR 只得到纯文字，表格、公式、代码的结构会丢失。
+核心管线（下载 → 转写/OCR → 笔记）已稳定发布。**v0.3.0（2026-08）新增内置零配置清洗**（转写 json 保结构 + 画面逐帧 + 图集/文本通用）和**时间轴交错**（转写 + 画面按时间戳对齐成半成品 md），并附三分支测试（`tests/`，报告 `docs/test-report-v0.3.0.md`）。
+
+Next up is making **visual extraction smarter**: today a video frame or image is OCR'd into plain text, which loses structure (tables, formulas, code).
+
+下一步是**让画面信息提取更聪明**：现在视频帧/图片的 OCR 只得到纯文字，表格、公式、代码的结构会丢失。
 
 ---
 

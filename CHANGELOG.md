@@ -5,6 +5,28 @@ All notable changes to media-to-notes are documented here, following [Keep a Cha
 
 - **Docs** Removed the internal planning folder `优化方向/` from the repo (kept local, git-ignored) and replaced it with a polished bilingual [ROADMAP.md](ROADMAP.md) on the public roadmap
 
+## [0.3.0] — 2026-08-19
+
+### Added
+
+- **Cleaning pipeline** (`scripts/clean_timeline.py`): **built-in, zero-config** cleaning — transcript JSON kept-structure cleaning + per-frame visual cleaning (strip UI watermarks / tags / garbled text, keep timestamps), plus plain-text cleaning for image albums / text. No external cleaner dependency.
+- **Timeline interleaving** (`scripts/assemble_md.py`): transcription + frames interleaved by timestamp into a half-ready Markdown — visuals stay aligned with speech.
+- **Upgraded wizard** (`scripts/wizard.py` + `test_wizard.py`): interactive setup for OCR interval / GLM / naming / course rules, answer-and-go.
+- **Half-ready md in the main flow**: `media_to_notes.py` now cleans and assembles all three branches (video / image album / text) into `*_clean.md`; original artifacts are kept, and the "feed Claude" flow is unchanged.
+- **Tests**: `tests/test_clean.py` + `tests/sample/` — three-branch cleaning tests (video / image album / text, simulated samples, no copyrighted content); run with `python -m unittest tests/test_clean.py`; CI now runs them. Report: `docs/test-report-v0.3.0.md`.
+
+### Changed
+
+- `transcribe_funasr.py`: VAD silence trimming, hotword injection, confidence estimation, filler-word cleanup, progress bar.
+- `video_frames_ocr.py`: OCR text reordered by bounding-box coordinates into reading order (top-to-bottom, left-to-right); dependency precheck; progress bar.
+- `glm_vision.py` / `notes_pipeline.py` / `ocr_images.py` / `splice_feynman.py`: aligned with local upgrades.
+- `spec/note_style_spec.md`: expanded spec.
+- Config loading: the wizard can write `scripts/.config/.env`, which the main flow also loads.
+
+### Security
+
+- API keys stay in env vars; no hardcoded absolute paths.
+
 ## [0.2.2] — 2026-08-13
 
 - **Fixed** Privacy: `优化方向/README.md` stripped leftover internal environment references

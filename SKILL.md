@@ -44,14 +44,17 @@ python scripts/media_to_notes.py --glm yes|no
 - 🎬 **视频** → ① SenseVoice 转写（`transcribe_funasr.py`）② **多帧 OCR 画面文字**（`video_frames_ocr.py`，默认间隔/上限由 `.env` 的 `OCR_INTERVAL` 控制，**OCR 全帧免费**）③ GLM=yes 时 **只对关键帧**（画面变化大的帧，`select_key_frames` 自动判断）调用 `glm_vision.py`（glm-4.6v-flashx）描述画面——省钱；`.env` 设 `GLM_MODE=all` 则每帧都分析（贵，长视频慎用）
 - 🖼️ **图集** → ① OCR 每张图（`ocr_images.py`）② GLM=yes 再对每张图调用 `glm_vision.py` 描述
 
-### 阶段3：Claude 读取转写/OCR/GLM 文本 → 按 `spec/note_style_spec.md` **+ `spec/user_prefs.md`（用户偏好）** 生成 AI 教材笔记
+### 阶段3：Claude 读取 **半成品 md（`*_clean.md`，推荐）** 或 转写/OCR/GLM 文本 → 按 `spec/note_style_spec.md` **+ `spec/user_prefs.md`（用户偏好）** 生成 AI 教材笔记
 写入 `NoteBooks/{日期}/{顺序}_{日期}_{概要}_{大小}.md`（若 .env 设 `NOTE_ORGANIZE=topic` 则按课程/主题分目录）
 **生成笔记前必读 `spec/user_prefs.md`**：遵循用户偏好（笔记语言 / 费曼题密度 / 是否保留附录 / 目录组织）。
 **OCR 文本必须纠错**：识别错字/乱码/误识需结合上下文纠正（可查 `config/ocr_corrections.example.json`），保证专业准确
 
 ### 关键脚本
-- `video_frames_ocr.py`：视频多帧 OCR + 可选 GLM（RapidOCR 轻量引擎）
+- `video_frames_ocr.py`：视频多帧 OCR + 坐标排序 + 可选 GLM（RapidOCR 轻量引擎）
 - `glm_vision.py`：独立 GLM 视觉脚本（glm-4.6v-flashx，需 `GLM_API_KEY`）
+- `clean_timeline.py`：内置清洗（转写 json 保结构 + 画面逐帧 + 图集/文本通用，零配置）
+- `assemble_md.py`：组装（转写 + 画面 → 时间轴交错半成品 md）
+- `wizard.py`：升级向导（交互配置 OCR 频率 / GLM / 命名 / 课程规则）
 
 ## AI 教材笔记格式（风格规范）
 

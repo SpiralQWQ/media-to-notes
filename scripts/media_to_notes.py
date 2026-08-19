@@ -32,9 +32,12 @@ try:  # Windows GBK 控制台也能正常打印 emoji/中文，避免 UnicodeEnc
 except Exception:
     pass
 
-try:  # 允许从仓库根 .env 加载配置（可选依赖 python-dotenv）
+try:  # 允许从 .env 加载配置（仓库根 .env 或升级向导 wizard.py 生成的 scripts/.config/.env）
     from dotenv import load_dotenv
     load_dotenv()
+    _wenv = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".config", ".env")
+    if os.path.exists(_wenv):
+        load_dotenv(_wenv)
 except ImportError:
     pass
 
@@ -49,6 +52,15 @@ OCR_PY = os.environ.get("DD_OCR_PY") or sys.executable           # PaddleOCR 解
 YTDLP = os.environ.get("DD_YTDLP") or "yt-dlp"                   # yt-dlp 可执行文件
 SCRIPTS = os.path.join(BASE, "scripts")
 STATE = os.path.join(BASE, "temp", "current_job.json")
+
+# 升级能力：内置清洗 + 组装（clean_timeline / assemble_md，同目录 scripts/）。
+# 内置清洗零配置（不依赖外部清洗引擎）；异常时主流程 try/except 兜底不阻断。
+try:
+    if SCRIPTS not in sys.path:
+        sys.path.insert(0, SCRIPTS)
+    import clean_timeline, assemble_md  # noqa: E402,F401
+except ImportError:
+    clean_timeline = assemble_md = None
 
 VIDEO_EXTS = (".mp4", ".webm", ".mkv", ".mov", ".flv", ".avi")
 IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp")
@@ -351,13 +363,60 @@ def detect(source: str) -> None:
     print("→ 请向用户确认: 是否开启 GLM 视觉分析 (glm-4.6v-flashx)？然后运行 --glm yes|no")
 
 
+def _build_clean_md_video(tjson: str, vtxt: str, st: dict) -> str:
+    """视频：清洗转写 json + 画面 txt → 时间轴交错半成品 md（升级能力）。
+
+    内置清洗（clean_timeline，零配置）；失败降级返回空串，不阻断主流程。
+    """
+    if clean_timeline is None or assemble_md is None:
+        return ""
+    try:
+        cjson = clean_timeline.clean_transcript_json(tjson)
+        cvisual = clean_timeline.clean_visual_timeline(vtxt) if os.path.exists(vtxt) else ""
+        md = assemble_md.assemble_interleaved(cjson, cvisual, title=st["summary"])
+        out = os.path.join(st["vdir"], f"{st['summary']}_clean.md")
+        with open(out, "w", encoding="utf-8") as f:
+            f.write(md)
+        return out
+    except Exception as e:
+        print(f"      [WARN] 视频清洗/组装跳过: {type(e).__name__}: {e}")
+        return ""
+
+
+def _build_clean_md_plain(src_path: str, out_path: str) -> str:
+    """图集/文本：txt 源 → 内置清洗 → 简单半成品 md。
+
+    内置清洗（clean_timeline.clean_plain_text，零配置）；失败降级返回空串。
+    """
+    if clean_timeline is None:
+        return ""
+    try:
+        with open(src_path, encoding="utf-8", errors="replace") as f:
+            raw = f.read()
+        cleaned = clean_timeline.clean_plain_text(raw)
+        if not cleaned:
+            return ""
+        md = "## 内容（清洗后）\n\n" + cleaned
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write(md)
+        return out_path
+    except Exception as e:
+        print(f"      [WARN] 清洗/组装跳过: {type(e).__name__}: {e}")
+        return ""
+
+
 def process(glm: str) -> None:
     """阶段2: 读状态 → 视频: ASR+多帧OCR(+GLM) / 图集: OCR(+GLM) / 文本: 直接整理"""
     st = load_state()
     ctype = st["type"]
     if ctype == "text":
         print(f"[1/1] 文本已就绪: {_san(st['tfile'])}")
-        print("→ 请 Claude 读取文本 → 按 spec/note_style_spec.md 生成 AI 教材笔记")
+        clean_md = _build_clean_md_plain(
+            st["tfile"],
+            os.path.join(os.path.dirname(st["tfile"]), f"{st['summary']}_clean.md"))
+        if clean_md:
+            print(f"      [升级] 半成品 md: {_san(os.path.basename(clean_md))}")
+        print("→ 请 Claude 读取以上文本（或半成品 md）→ 按 spec/note_style_spec.md 生成 AI 教材笔记")
         return
     if ctype == "video":
         # ① ASR 转写(必做)
@@ -393,6 +452,10 @@ def process(glm: str) -> None:
             sys.exit("视频视觉分析失败")
         print(f"[3/3] 转写: {_san(tjson)}")
         print(f"      视觉文本: {_san(vtxt)}")
+        # ③ 清洗 + 组装（升级能力）：清洗 json/txt → 时间轴交错半成品 md
+        clean_md = _build_clean_md_video(tjson, vtxt, st)
+        if clean_md:
+            print(f"      [升级] 半成品 md: {_san(os.path.basename(clean_md))}")
     else:
         # 图集: OCR(必做) + 可选 GLM
         print("[1/2] OCR 识别图片文字...")
@@ -419,7 +482,11 @@ def process(glm: str) -> None:
                 f.write("\n\n".join(lines))
             print(f"      GLM 描述: {_san(glm_txt)}")
         print(f"[2/2] OCR 文本: {_san(ocr_txt)}")
-    print("→ 请 Claude 读取以上文本 → 生成 AI 教材笔记")
+        clean_md = _build_clean_md_plain(
+            ocr_txt, os.path.join(st["idir"], f"{st['summary']}_clean.md"))
+        if clean_md:
+            print(f"      [升级] 半成品 md: {_san(os.path.basename(clean_md))}")
+    print("→ 请 Claude 读取以上文本（或半成品 md）→ 生成 AI 教材笔记")
 
 
 def main():

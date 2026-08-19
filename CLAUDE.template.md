@@ -54,10 +54,12 @@ python scripts/media_to_notes.py "<链接>" --detect
 python scripts/media_to_notes.py --glm yes|no
 ```
 
+处理完成后自动产出清洗后的半成品 md（`*_clean.md`，内置清洗零配置）：转写 + 画面按时间戳交错，画面与台词对位、不丢失。
+
 ### 阶段3：生成 AI 教材
 
 **生成前必读 `spec/user_prefs.md`**（用户偏好：笔记语言/费曼题密度/是否保留附录/目录组织——由 setup.py 生成）。
-Claude 读取 转写 JSON / OCR 文本 / GLM 描述 → 按 `spec/note_style_spec.md` + `spec/user_prefs.md` 生成 AI 教材笔记 → 写入 `NoteBooks/{日期}/{顺序}_{日期}_{概要}_{大小}.md`（若 .env 设 `NOTE_ORGANIZE=topic` 则按课程/主题分目录）。
+Claude 读取 **半成品 md（`*_clean.md`，推荐）** 或 转写 JSON / OCR 文本 / GLM 描述 → 按 `spec/note_style_spec.md` + `spec/user_prefs.md` 生成 AI 教材笔记 → 写入 `NoteBooks/{日期}/{顺序}_{日期}_{概要}_{大小}.md`（若 .env 设 `NOTE_ORGANIZE=topic` 则按课程/主题分目录）。
 
 ## 内容类型分支表
 
@@ -71,12 +73,15 @@ Claude 读取 转写 JSON / OCR 文本 / GLM 描述 → 按 `spec/note_style_spe
 
 | 脚本 | 职责 |
 |---|---|
-| `scripts/media_to_notes.py` | 主流程（阶段1 检测下载 + 阶段2 处理） |
-| `scripts/transcribe_funasr.py` | SenseVoice 逐段转写（fsmn-vad 切段） |
-| `scripts/video_frames_ocr.py` | 视频多帧 OCR + 场景检测 + 关键帧 GLM |
+| `scripts/media_to_notes.py` | 主流程（阶段1 检测下载 + 阶段2 处理 + 内置清洗组装） |
+| `scripts/transcribe_funasr.py` | SenseVoice 逐段转写（fsmn-vad 切段 + VAD 裁剪 + 热词 + 置信度） |
+| `scripts/video_frames_ocr.py` | 视频多帧 OCR + 场景检测 + 坐标排序 + 关键帧 GLM |
 | `scripts/ocr_images.py` | 图集逐张 OCR |
 | `scripts/glm_vision.py` | 独立 GLM 视觉理解（glm-4.6v-flashx，需 `GLM_API_KEY`） |
 | `scripts/notes_pipeline.py` | 转写 JSON → 原始转写 md |
+| `scripts/wizard.py` | 升级向导（OCR 频率/GLM/命名/课程规则 交互配置，答完即用） |
+| `scripts/clean_timeline.py` | 内置清洗（转写 json 保结构 + 画面逐帧 + 图集/文本通用，零配置） |
+| `scripts/assemble_md.py` | 组装（转写 + 画面 → 时间轴交错半成品 md） |
 
 ## 笔记格式铁律（摘要，完整见 `spec/note_style_spec.md`）
 

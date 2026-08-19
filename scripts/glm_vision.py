@@ -12,20 +12,31 @@ import sys
 import urllib.error
 import urllib.request
 
-try:  # Windows GBK 控制台也能正常打印 emoji/中文，避免 UnicodeEncodeError
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-except Exception:
-    pass
-
 try:  # 允许从仓库根 .env 加载 GLM_API_KEY（可选依赖 python-dotenv）
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
     pass
 
-API_URL = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
-MODEL = "glm-4.6v-flashx"
+# 从 wizard 配置目录读取 .env（v0.6.0：支持自定义供应商/模型）
+_CONFIG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".config")
+_ENV_FILE = os.path.join(_CONFIG_DIR, ".env")
+if os.path.exists(_ENV_FILE):
+    try:
+        with open(_ENV_FILE, encoding="utf-8") as _f:
+            for _line in _f:
+                _line = _line.strip()
+                if _line.startswith("GLM_API_KEY=") and not os.environ.get("GLM_API_KEY"):
+                    os.environ["GLM_API_KEY"] = _line.split("=", 1)[1]
+                elif _line.startswith("GLM_API_URL="):
+                    os.environ.setdefault("GLM_API_URL", _line.split("=", 1)[1])
+                elif _line.startswith("GLM_MODEL="):
+                    os.environ.setdefault("GLM_MODEL", _line.split("=", 1)[1])
+    except OSError:
+        pass
+
+API_URL = os.environ.get("GLM_API_URL", "https://open.bigmodel.cn/api/paas/v4/chat/completions")
+MODEL = os.environ.get("GLM_MODEL", "glm-4.6v-flashx")
 
 
 def main():

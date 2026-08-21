@@ -1,0 +1,1 @@
+{"text":"第一句台词。第二句台词。","segments":[{"text":"第一句台词","start_ms":0,"end_ms":2000,"confidence":0.9,"review":false},{"text":"第二句台词","start_ms":2000,"end_ms":4000,"confidence":0.8,"review":false}],"sentences":[{"text":"第一句台词","start_ms":0,"end_ms":2000,"confidence":0.9},{"text":"第二句台词","start_ms":2000,"end_ms":4000,"confidence":0.8}]}

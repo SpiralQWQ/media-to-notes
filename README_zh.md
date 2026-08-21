@@ -382,3 +382,14 @@ Bug 与新网站支持先提 [GitHub Issues](https://github.com/SpiralQWQ/media-
 </p>
 
 <p align="center"><i>能一路读到这里的你，谢谢。🙏</i></p>
+
+## v0.4.0 新增 — `cli.py` 四模态入口
+
+分层处理（`core`/`engines`/`clean`/`assemble`）+ 类型向导：
+
+```bash
+python cli.py 视频.mp4 --glm yes|no [--wizard]
+python cli.py 图1.png 图2.png [--glm] [--wizard]   # 图集合成一份 md
+python cli.py 音频.wav [--wizard]
+python cli.py 文本.txt
+```

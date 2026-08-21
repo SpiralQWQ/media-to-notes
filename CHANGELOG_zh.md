@@ -1,6 +1,20 @@
 # 变更日志
 本项目所有重要变更都记录在此，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，版本遵循[语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [0.4.0] — 2026-08-19  三模态 + 分层架构 + 类型向导
+
+### Added
+- **分层处理**：`core/`（video/image/audio）+ `engines/`（asr/ocr/glm_vision/ffmpeg）+ `clean/`（transcript/visual/plain）+ `assemble/`（interleave/album/timeline），单向依赖。
+- **`cli.py` 四模态入口**（视频/图集/音频/文本）+ `--wizard`（按类型弹向导）。
+- **音频链路**（ASR → timeline md）；**图片对齐视频**（每图 OCR+GLM、图集多图合成一份 md）。
+- **类型感知向导**：视频全问 / 图集只问 GLM / 音频只问说话人。
+
+### Changed
+- 旧脚本部分归档 `scripts/_legacy/`（notes_pipeline/splice_feynman/test_wizard）；setup.py 保留（与类型向导并存）。
+
+### Test
+- 既有测试全绿；fixloop 证据 round-027~032。
+
 ## [0.3.0] — 2026-08-19
 
 ### Added

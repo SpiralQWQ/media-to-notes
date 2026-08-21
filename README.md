@@ -363,3 +363,14 @@ If this project has helped you in any way, you're welcome to buy me a coffee. It
 </p>
 
 <p align="center"><i>Thanks for reading all the way down here. 🙏</i></p>
+
+## New in v0.4.0 — `cli.py` four-modal entry
+
+Layered processing (`core`/`engines`/`clean`/`assemble`) + typed wizard:
+
+```bash
+python cli.py video.mp4 --glm yes|no [--wizard]
+python cli.py a.png b.png [--glm] [--wizard]     # album → one md
+python cli.py audio.wav [--wizard]
+python cli.py notes.txt
+```

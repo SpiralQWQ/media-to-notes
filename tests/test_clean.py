@@ -10,9 +10,13 @@ import sys
 import tempfile
 import unittest
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts"))
-import clean_timeline
-import assemble_md
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(_ROOT, "scripts"))
+sys.path.insert(0, _ROOT)
+from clean.transcript import clean_transcript_json
+from clean.visual import clean_visual_timeline
+from clean.plain import clean_plain_text
+from assemble.interleave import assemble_interleaved
 
 SAMPLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample")
 
@@ -28,7 +32,7 @@ class TestVideoBranch(unittest.TestCase):
 
     def test_transcript_kept_structure_and_punct(self):
         """保结构清洗：段数不丢、标点乱码规范化（,,→,  ,.→.）"""
-        out = clean_timeline.clean_transcript_json(
+        out = clean_transcript_json(
             os.path.join(SAMPLE, "video_sample.json"), self._path("v_clean.json"))
         with open(out, encoding="utf-8") as f:
             data = json.load(f)
@@ -42,7 +46,7 @@ class TestVideoBranch(unittest.TestCase):
 
     def test_visual_timestamps_and_watermark(self):
         """画面清洗：时间戳保留、水印/标签删、GLM 描述保留"""
-        out = clean_timeline.clean_visual_timeline(
+        out = clean_visual_timeline(
             os.path.join(SAMPLE, "video_sample_visual.txt"), self._path("v_clean.txt"))
         with open(out, encoding="utf-8") as f:
             txt = f.read()
@@ -56,11 +60,11 @@ class TestVideoBranch(unittest.TestCase):
 
     def test_interleave_has_speech_and_visual(self):
         """时间轴交错：同时含转写（🎤）和画面（🖼）"""
-        cjson = clean_timeline.clean_transcript_json(
+        cjson = clean_transcript_json(
             os.path.join(SAMPLE, "video_sample.json"), self._path("v_clean.json"))
-        cvisual = clean_timeline.clean_visual_timeline(
+        cvisual = clean_visual_timeline(
             os.path.join(SAMPLE, "video_sample_visual.txt"), self._path("v_clean.txt"))
-        md = assemble_md.assemble_interleaved(cjson, cvisual, title="样例视频")
+        md = assemble_interleaved(cjson, cvisual, title="样例视频")
         self.assertIn("🎤", md, "转写带 🎤 标记")
         self.assertIn("🖼", md, "画面带 🖼 标记")
         self.assertGreater(md.count("🎤"), 0)
@@ -73,7 +77,7 @@ class TestAlbumBranch(unittest.TestCase):
     def test_album_clean(self):
         with open(os.path.join(SAMPLE, "album_sample.txt"), encoding="utf-8") as f:
             raw = f.read()
-        out = clean_timeline.clean_plain_text(raw)
+        out = clean_plain_text(raw)
         self.assertNotIn("坚持打卡", out, "界面水印删除")
         self.assertNotIn("点赞", out, "按钮碎片删除")
         self.assertNotIn("知识点", out, "界面词删除")
@@ -88,7 +92,7 @@ class TestTextBranch(unittest.TestCase):
     def test_text_clean(self):
         with open(os.path.join(SAMPLE, "text_sample.txt"), encoding="utf-8") as f:
             raw = f.read()
-        out = clean_timeline.clean_plain_text(raw)
+        out = clean_plain_text(raw)
         self.assertNotIn("以上内容由AI生成", out, "AI 生成标记删除")
         self.assertNotIn("阅读全文", out, "阅读类 UI 删除")
         self.assertNotIn("相关推荐", out, "推荐类 UI 删除")

@@ -85,3 +85,5 @@ python scripts/media_to_notes.py --glm yes|no
 - **抖音 Cookie 过期**（报反爬/Empty 200）：按 README「Cookie 设置」重新抓取登录 Cookie 后重跑
 - **转写错听**：可往 `scripts/corrections.json` 加词条（如 "get up": "github"）
 - 长视频(>10分钟)转写需几分钟，耐心等待
+
+- v0.4.0: use `cli.py` for four-modal (video/album/audio/text); typed wizard `--wizard`.

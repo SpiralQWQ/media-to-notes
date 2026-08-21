@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "media-to-notes"
-version = "0.3.0"
+version = "0.4.0"
 description = "Turn videos / image albums / text into AI teaching notes — with built-in zero-config cleaning and timeline interleaving"
 readme = "README.md"
 requires-python = ">=3.10"

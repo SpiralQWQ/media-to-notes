@@ -46,13 +46,11 @@ DEFAULT_CONFIG = {
     "note_style": "new",
     "precheck": True,
     # 存储配置（v0.5.0 新增）
-    "notes_root": "",          # 根目录：空=自动推导（仓库根）；自定义填路径
+    "notes_root": "",          # 根目录：空=自动推导(M.AIStudy)；自定义填路径
     "cleanup": "keep",         # 中间产物: keep保留 / slim清wav / clean全清理
-    "cache_place": "default",  # 缓存位置: default=仓库根缓存 / with_notes=跟笔记 / custom=自定义
+    "cache_place": "default",  # 缓存位置: default=_转写缓存 / with_notes=跟笔记 / custom=自定义
     "naming": "default",       # 命名: default=NN_XX_X_小节 / simple=只小节名 / custom=自定义前缀
     "naming_prefix": "",       # 自定义命名前缀（naming=custom 时生效）
-    # 笔记组织（双模式，v0.3.0）
-    "organize": "date",        # date=通用日期组织（开源默认） / topic=课程主题分目录（课程视频专用）
     # 课程名规则（v0.6.5 新增）
     "course_rule": "auto",     # 课程名(笔记最外层文件夹): auto自动识别 / fixed固定 / folder源文件名
     "course_fixed": "",        # course_rule=fixed 时的固定课程名
@@ -293,28 +291,24 @@ def _validate_root(root: str) -> bool:
 
 
 def _default_root() -> str:
-    """自动推导默认根目录（= 仓库根，跟随脚本位置，与主脚本一致）。
-    wizard.py 位于 <仓库>/scripts/，向上 1 级即仓库根。"""
-    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    """自动推导的默认根目录（= M.AIStudy，跟随脚本位置，与主脚本一致）。
+    wizard.py 位于 _video_tools/scripts/，向上 3 级即 M.AIStudy。"""
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-def _preview_storage(root: str, organize: str = "date") -> None:
+def _preview_storage(root: str) -> None:
     """显示存储根目录下的完整结构预览（笔记+缓存两层），含具体绝对路径。"""
     nb = os.path.join(root, "NoteBooks")
     cache = os.path.join(root, "_转写缓存")
     print(f"\n  存储根目录：{root}")
     print("  将自动创建以下结构：")
-    if organize == "topic":
-        print(f"    ▸ 笔记目录：  {nb}\\课程\\第XX讲_标题\\NN_XX_X_小节.md")
-        print(f"    ▸ 视频副本：  {nb}\\课程\\第XX讲_标题\\源数据_小节\\视频.mp4")
-        print(f"    ▸ 中间产物：  {cache}\\课程\\第XX讲\\源数据_小节\\wav+json+srt+visual")
-    else:
-        print(f"    ▸ 笔记目录：  {nb}\\日期\\00_日期_概要.md")
-        print(f"    ▸ 中间产物：  {cache}\\日期\\…（视频/图集/文本按来源归类）")
+    print(f"    ▸ 笔记目录：  {nb}\\课程\\第XX讲_标题\\NN_XX_X_小节.md")
+    print(f"    ▸ 视频副本：  {nb}\\课程\\第XX讲_标题\\源数据_小节\\视频.mp4")
+    print(f"    ▸ 中间产物：  {cache}\\课程\\第XX讲\\源数据_小节\\wav+json+srt+visual")
     print()
 
 
-def _ask_storage_root(cfg: dict, organize: str = "date") -> None:
+def _ask_storage_root(cfg: dict) -> None:
     """问题5：存储根目录。默认/自定义都显示具体路径预览 → 确认；N 打回重选。"""
     while True:
         dr = _default_root()
@@ -330,7 +324,7 @@ def _ask_storage_root(cfg: dict, organize: str = "date") -> None:
             default_key="A")
         if root_choice == "A":
             # 默认也要显示具体地址，让用户亲眼确认默认位置在哪
-            _preview_storage(_default_root(), organize)
+            _preview_storage(_default_root())
             confirm = input("  确认用这个默认位置？(Y/N，或直接回车=确认): ").strip().upper()
             if confirm == "" or confirm == "Y":
                 cfg["notes_root"] = ""
@@ -507,9 +501,11 @@ def _test_glm(api_url: str, api_key: str, model: str = "glm-4.6v-flashx") -> str
         return "network"
 
 
-def run_wizard(first: bool = True, mode_override: str = None) -> dict:
-    """运行转写配置向导。first=True 显示完整向导；批量模式后续沿用。
+def run_wizard(first: bool = True, mode_override: str = None, media_type: str = "video") -> dict:
+    """运行配置向导。first=True 显示完整向导；批量模式后续沿用。
     mode_override：批量模式下已由外层指定 mode（serial/parallel），跳过问题1。
+    media_type ∈ {video, image, audio}：按类型只问相关项（视频全问；图集跳抽帧/说话人；
+    音频跳抽帧/GLM画面/课程）。
     """
     cfg = load_config()
     print("\n" + "=" * 50)
@@ -517,17 +513,6 @@ def run_wizard(first: bool = True, mode_override: str = None) -> dict:
     print("开始前，我们先花一分钟确认几个设置。每项都有默认值，")
     print("直接按回车就用默认的，不用每个都改。")
     print("=" * 50)
-
-    # 问题0：笔记组织方式（双模式，仅首次询问）
-    if first:
-        org = _ask(
-            "【问题0】笔记按什么方式组织？",
-            {
-                "A": ("通用日期（推荐）", "例子：NoteBooks/20260819/00_20260819_概要.md —— 任何来源（视频/图集/文本）通用"),
-                "B": ("课程主题", "例子：NoteBooks/课程名/第01讲_标题/… —— 课程视频专用，按课程/讲次整理"),
-            },
-            default_key="A")
-        cfg["organize"] = "date" if org == "A" else "topic"
 
     # 问题1：这次怎么转？（最先问）
     if mode_override:
@@ -552,61 +537,67 @@ def run_wizard(first: bool = True, mode_override: str = None) -> dict:
                 default_key="A")
             cfg["mode"] = "serial" if sub == "A" else "parallel"
 
-    # 问题2：视频画面怎么截图？（固定+智能结合）
-    interval_choice = _ask(
-        "【问题2】视频画面怎么截图？为了看懂幻灯片和公式要截图，越密越细但越慢。",
-        {
-            "A": ("每 1 秒截 1 张（最细）", "例子：1小时课≈3600张图，代码/公式多也不漏"),
-            "B": ("每 2 秒截 1 张", "例子：1小时课≈1800张图，普通课够用"),
-            "C": ("每 5 秒截 1 张", "例子：1小时课≈720张图，画面基本不动最快"),
-        },
-        default_key="A")
-    cfg["interval"] = {"A": 1.0, "B": 2.0, "C": 5.0}[interval_choice]
+    # 问题2：视频画面怎么截图？（固定+智能结合）—— 仅视频
+    if media_type == "video":
+        interval_choice = _ask(
+            "【问题2】视频画面怎么截图？为了看懂幻灯片和公式要截图，越密越细但越慢。",
+            {
+                "A": ("每 1 秒截 1 张（最细）", "例子：1小时课≈3600张图，代码/公式多也不漏"),
+                "B": ("每 2 秒截 1 张", "例子：1小时课≈1800张图，普通课够用"),
+                "C": ("每 5 秒截 1 张", "例子：1小时课≈720张图，画面基本不动最快"),
+            },
+            default_key="A")
+        cfg["interval"] = {"A": 1.0, "B": 2.0, "C": 5.0}[interval_choice]
 
-    smart = _ask(
-        "  要不要【智能省帧】？画面没变化就不重复截（翻页之间不狂截），省时间。",
-        {
-            "A": ("开启（推荐）", "例子：同一页PPT停10秒→只截1张，不白截9张"),
-            "B": ("不开启", "例子：固定频率每张都截，最稳但慢"),
-        },
-        default_key="A")
-    cfg["smart_frame"] = (smart == "A")
+        smart = _ask(
+            "  要不要【智能省帧】？画面没变化就不重复截（翻页之间不狂截），省时间。",
+            {
+                "A": ("开启（推荐）", "例子：同一页PPT停10秒→只截1张，不白截9张"),
+                "B": ("不开启", "例子：固定频率每张都截，最稳但慢"),
+            },
+            default_key="A")
+        cfg["smart_frame"] = (smart == "A")
 
-    # 问题3：让 AI 看懂画面（GLM 关键帧）
-    glm_choice = _ask(
-        "【问题3】要不要让 AI【看懂】画面？截图只能读出文字；看懂是理解图的意思"
-        "（如'这是编辑距离的表格'）。花一点云端费用（每次几厘钱）。",
-        {
-            "A": ("开启（推荐）", "例子：截图里的表格，AI能解释'这是算编辑距离的'，笔记更深入"),
-            "B": ("关闭", "例子：只记录截图上的文字，不解释图，省钱但笔记浅一些"),
-        },
-        default_key="A")
-    cfg["glm"] = "yes" if glm_choice == "A" else "no"
-    if cfg["glm"] == "yes":
-        _ask_glm_config()
+    # 问题3：让 AI 看懂画面（GLM 关键帧）—— 视频/图集（文案按类型）
+    if media_type in ("video", "image"):
+        glm_question = (
+            "【问题3】要不要让 AI【看懂】每张图？OCR 能读出图上文字，看懂是理解图的内容"
+            "（如'这是编辑距离的表格'）。花一点云端费用（每次几厘钱）。"
+            if media_type == "image"
+            else "【问题3】要不要让 AI【看懂】画面？截图只能读出文字；看懂是理解图的意思"
+                 "（如'这是编辑距离的表格'）。花一点云端费用（每次几厘钱）。"
+        )
+        glm_choice = _ask(glm_question,
+            {
+                "A": ("开启（推荐）", "例子：截图里的表格，AI能解释'这是算编辑距离的'，笔记更深入"),
+                "B": ("关闭", "例子：只记录截图上的文字，不解释图，省钱但笔记浅一些"),
+            },
+            default_key="A")
+        cfg["glm"] = "yes" if glm_choice == "A" else "no"
+        if cfg["glm"] == "yes":
+            _ask_glm_config()
 
-    # 问题4：几个人说话
-    spk = _ask(
-        "【问题4】视频里几个人在说话？",
-        {
-            "A": ("就一个人讲", "例子：老师自己讲课，不标谁说的，转写快"),
-            "B": ("多人讨论/访谈", "例子：访谈节目，标'讲师A 说…讲师B 说…'"),
-        },
-        default_key="A")
-    cfg["speaker"] = "single" if spk == "A" else "multi"
+    # 问题4：几个人说话 —— 视频/音频（文案按类型）
+    if media_type in ("video", "audio"):
+        spk = _ask(
+            "【问题4】音频里几个人在说话？" if media_type == "audio"
+            else "【问题4】视频里几个人在说话？",
+            {
+                "A": ("就一个人讲", "例子：老师自己讲课，不标谁说的，转写快"),
+                "B": ("多人讨论/访谈", "例子：访谈节目，标'讲师A 说…讲师B 说…'"),
+            },
+            default_key="A")
+        cfg["speaker"] = "single" if spk == "A" else "multi"
 
     # 问题5：存储根目录（默认/自定义都显示具体路径预览 → 确认；N 打回重选）
-    _ask_storage_root(cfg, cfg.get("organize", "date"))
+    _ask_storage_root(cfg)
 
-    # 问题6：课程名（仅课程主题模式；通用日期模式跳过，用来源归类）
-    if cfg.get("organize", "date") == "topic":
+    # 问题6：课程名（笔记最外层文件夹）—— 仅视频（图集/音频用默认，不强制课程）
+    if media_type == "video":
         _ask_course_rule(cfg)
-        # 问题7：笔记文件怎么命名（选定 → 显示完整最终路径 → 确认；N 打回重选）
-        _ask_naming(cfg)
-    else:
-        cfg["course_rule"] = "auto"
-        cfg["naming"] = "default"
-        cfg["naming_prefix"] = ""
+
+    # 问题7：笔记文件怎么命名（选定 → 显示完整最终路径 → 确认；N 打回重选）
+    _ask_naming(cfg)
 
     # 问题8：中间产物怎么处理
     clean_choice = _ask(
@@ -626,9 +617,9 @@ def run_wizard(first: bool = True, mode_override: str = None) -> dict:
         "【问题9】上面这些中间文件（音频/文字/字幕）放哪里？",
         {
             "A": ("独立缓存目录（推荐）",
-                  f"例子：放 {os.path.join(_root9, '_转写缓存')}\\，和笔记分开，清爽"),
+                  f"例子：放 {os.path.join(_root9, '_转写缓存')}\\课程\\第XX讲\\，和笔记分开，清爽"),
             "B": ("跟笔记放一起",
-                  f"例子：放进 {os.path.join(_root9, 'NoteBooks')}\\，视频和产物同处"),
+                  f"例子：放进 {os.path.join(_root9, 'NoteBooks')}\\课程\\第XX讲_标题\\源数据_小节\\，视频和产物同处"),
         },
         default_key="A")
     cfg["cache_place"] = "default" if cache_choice == "A" else "with_notes"
@@ -637,32 +628,37 @@ def run_wizard(first: bool = True, mode_override: str = None) -> dict:
     cfg["note_style"] = "new"
 
     save_config(cfg)
-    _print_summary(cfg)
+    _print_summary(cfg, media_type)
     return cfg
 
 
-def _print_summary(cfg: dict) -> None:
-    """向导收尾：确认清单。"""
+def _print_summary(cfg: dict, media_type: str = "video") -> None:
+    """向导收尾确认清单（按类型显示相关项）。"""
     mode_txt = {"single": "精读", "serial": "连续串行", "parallel": "连续并行"}[cfg["mode"]]
-    frame_txt = f"每 {cfg['interval']:g} 秒 1 张" + (" + 智能省帧" if cfg["smart_frame"] else "")
-    glm_txt = "开（GLM 关键帧）" if cfg["glm"] == "yes" else "关"
-    spk_txt = "单讲师" if cfg["speaker"] == "single" else "多人"
-    cr = cfg.get("course_rule", "auto")
-    if cr == "fixed":
-        course_txt = f"固定「{cfg.get('course_fixed', '')}」"
-    elif cr == "folder":
-        course_txt = "源文件夹名"
-    else:
-        course_txt = "自动识别"
     naming_txt = {"default": "默认规则", "simple": "只留小节名",
                   "custom": f"前缀「{cfg.get('naming_prefix', '')}」"}[cfg.get("naming", "default")]
     print("\n[OK] 设置确认完毕，开始转写！")
-    print(f"   • 模式：{mode_txt} · 新结构笔记 · 组织：{'通用日期' if cfg.get('organize', 'date') == 'date' else '课程主题'}")
-    print(f"   • 画面：{frame_txt}")
-    print(f"   • 看懂画面：{glm_txt}")
-    print(f"   • 说话人：{spk_txt}")
-    print(f"   • 字幕/降噪：自动检测")
-    print(f"   • 课程名：{course_txt} · 命名：{naming_txt}")
+    print(f"   • 模式：{mode_txt} · 新结构笔记")
+    if media_type == "video":
+        frame_txt = f"每 {cfg['interval']:g} 秒 1 张" + (" + 智能省帧" if cfg["smart_frame"] else "")
+        glm_txt = "开（GLM 关键帧）" if cfg["glm"] == "yes" else "关"
+        spk_txt = "单讲师" if cfg["speaker"] == "single" else "多人"
+        cr = cfg.get("course_rule", "auto")
+        course_txt = (f"固定「{cfg.get('course_fixed', '')}」" if cr == "fixed"
+                      else "源文件夹名" if cr == "folder" else "自动识别")
+        print(f"   • 画面：{frame_txt}")
+        print(f"   • 看懂画面：{glm_txt}")
+        print(f"   • 说话人：{spk_txt}")
+        print(f"   • 字幕/降噪：自动检测")
+        print(f"   • 课程名：{course_txt} · 命名：{naming_txt}")
+    elif media_type == "image":
+        glm_txt = "开（GLM 逐张看懂）" if cfg["glm"] == "yes" else "关"
+        print(f"   • 看懂每张图：{glm_txt}")
+        print(f"   • 命名：{naming_txt}")
+    elif media_type == "audio":
+        spk_txt = "单说话人" if cfg["speaker"] == "single" else "多人"
+        print(f"   • 说话人：{spk_txt}")
+        print(f"   • 命名：{naming_txt}")
     input("\n按回车开始...")
 
 

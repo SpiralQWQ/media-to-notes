@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to media-to-notes are documented here, following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] — 2026-08-19  Trimodal + layered architecture + typed wizard
+
+### Added
+- **Layered processing**: `core/` (video/image/audio) + `engines/` (asr/ocr/glm_vision/ffmpeg) + `clean/` (transcript/visual/plain) + `assemble/` (interleave/album/timeline), single-dependency.
+- **`cli.py` four-modal entry** (video / image album / audio / text) with `--wizard` (per-type wizard).
+- **Audio pipeline** (ASR → timeline md); **image aligned with video** (OCR+GLM per image, album batch → one md).
+- **Typed wizard**: per-media questions (video all; image only GLM; audio only speaker).
+
+### Changed
+- Old scripts partly archived to `scripts/_legacy/` (notes_pipeline / splice_feynman / test_wizard); setup.py kept (coexist with typed wizard).
+
+### Test
+- Existing tests green; fixloop evidence rounds 027–032.
+
 ## [0.3.0] — 2026-08-19
 
 ### Added

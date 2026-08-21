@@ -58,9 +58,14 @@ STATE = os.path.join(BASE, "temp", "current_job.json")
 try:
     if SCRIPTS not in sys.path:
         sys.path.insert(0, SCRIPTS)
-    import clean_timeline, assemble_md  # noqa: E402,F401
+    if BASE not in sys.path:
+        sys.path.insert(0, BASE)
+    import clean.transcript as transcript
+    import clean.visual as visual
+    import clean.plain as plain
+    import assemble.interleave as interleave
 except ImportError:
-    clean_timeline = assemble_md = None
+    transcript = visual = plain = interleave = None
 
 VIDEO_EXTS = (".mp4", ".webm", ".mkv", ".mov", ".flv", ".avi")
 IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp")
@@ -368,12 +373,12 @@ def _build_clean_md_video(tjson: str, vtxt: str, st: dict) -> str:
 
     内置清洗（clean_timeline，零配置）；失败降级返回空串，不阻断主流程。
     """
-    if clean_timeline is None or assemble_md is None:
+    if transcript is None or interleave is None:
         return ""
     try:
-        cjson = clean_timeline.clean_transcript_json(tjson)
-        cvisual = clean_timeline.clean_visual_timeline(vtxt) if os.path.exists(vtxt) else ""
-        md = assemble_md.assemble_interleaved(cjson, cvisual, title=st["summary"])
+        cjson = transcript.clean_transcript_json(tjson)
+        cvisual = visual.clean_visual_timeline(vtxt) if os.path.exists(vtxt) else ""
+        md = interleave.assemble_interleaved(cjson, cvisual, title=st["summary"])
         out = os.path.join(st["vdir"], f"{st['summary']}_clean.md")
         with open(out, "w", encoding="utf-8") as f:
             f.write(md)
@@ -388,12 +393,12 @@ def _build_clean_md_plain(src_path: str, out_path: str) -> str:
 
     内置清洗（clean_timeline.clean_plain_text，零配置）；失败降级返回空串。
     """
-    if clean_timeline is None:
+    if plain is None:
         return ""
     try:
         with open(src_path, encoding="utf-8", errors="replace") as f:
             raw = f.read()
-        cleaned = clean_timeline.clean_plain_text(raw)
+        cleaned = plain.clean_plain_text(raw)
         if not cleaned:
             return ""
         md = "## 内容（清洗后）\n\n" + cleaned
@@ -422,7 +427,7 @@ def process(glm: str) -> None:
         # ① ASR 转写(必做)
         tjson = os.path.join(st["adir"], f"{st['summary']}.json")
         print("[1/3] FunASR 转写 (语音)...")
-        rr = run([ASR_PY, os.path.join(SCRIPTS, "transcribe_funasr.py"),
+        rr = run([ASR_PY, os.path.join(BASE, "engines", "asr.py"),
                   st["audio"], tjson], cwd=".", timeout=7200)
         if rr.returncode != 0:
             print(_san(rr.stdout[-1000:])); print(_san(rr.stderr[-1000:]))
@@ -445,7 +450,7 @@ def process(glm: str) -> None:
             _ocr_args = ["--interval", _ocr]
         else:
             _ocr_args = ["--interval", "999999"]  # no=基本不抽帧
-        rr = run([OCR_PY, os.path.join(SCRIPTS, "video_frames_ocr.py"), st["video"]]
+        rr = run([OCR_PY, os.path.join(BASE, "engines", "ocr.py"), st["video"]]
                   + _ocr_args + ["--glm", _glm_used, "--out", vtxt], cwd=".", timeout=7200)
         if rr.returncode != 0:
             print(_san(rr.stdout[-1000:])); print(_san(rr.stderr[-1000:]))
@@ -469,7 +474,7 @@ def process(glm: str) -> None:
             glm_txt = os.path.join(st["idir"], f"{st['summary']}_glm.txt")
             lines = []
             for img in st["images"]:
-                rr = run([sys.executable, os.path.join(SCRIPTS, "glm_vision.py"),
+                rr = run([sys.executable, os.path.join(BASE, "engines", "glm_vision.py"),
                           "--image", img, "--prompt",
                           "请描述这张图片的内容：主体/图表/界面/文字信息，用于辅助制作学习笔记。简洁中文。"],
                          cwd=".", timeout=180)

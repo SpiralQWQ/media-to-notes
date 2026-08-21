@@ -171,3 +171,5 @@ ASR 纠错示例：`"get up": "github"`（转写管线自动套用）；OCR 词�
 **GLM_API_KEY**：`https://open.bigmodel.cn` BigModel 开放平台申请；未设置时 `--glm yes` 报 `[ERR] 未设置 GLM_API_KEY 环境变量`，改用 `--glm no`。
 
 **长视频（>10 分钟）转写**：需几分钟，等待完成，不中断进程。
+
+- v0.4.0: entry `cli.py` (four-modal + typed wizard); layered core/engines/clean/assemble.

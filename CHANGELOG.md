@@ -83,3 +83,7 @@ Initial open-source release.
 [0.2.1]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.2.1
 [0.2.0]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.2.0
 [0.1.0]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.1.0
+
+## v0.4.1 (unreleased)
+- test: add 76 unit tests across core/cli/engines/clean/assemble (was 5)
+- fix: cli._classify(None) crash; timeline missing sort; assemble crash on missing source; image GLM exception bubbling

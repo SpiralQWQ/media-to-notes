@@ -14,6 +14,8 @@ import core.base as base
 
 
 def _classify(path: str):
+    if not path:
+        return None
     low = path.lower()
     if low.endswith(base.VIDEO_EXTS):
         return "video"

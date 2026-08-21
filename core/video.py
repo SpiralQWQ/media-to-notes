@@ -62,6 +62,8 @@ def process_video(video: str, glm: str = "no", out_root: str = "") -> dict:
     cvisual = visual.clean_visual_timeline(vtxt) if os.path.exists(vtxt) else ""
 
     # ⑤ 组装：时间交错 → 半成品 md
+    if not cjson and not cvisual:
+        return {"error": "转写 json 与画面 txt 均缺失，无法组装", "tjson": tjson, "vtxt": vtxt}
     md = interleave.assemble_interleaved(cjson, cvisual, title=stem)
     clean_md = os.path.join(out_root, f"{stem}_clean.md")
     with open(clean_md, "w", encoding="utf-8") as f:

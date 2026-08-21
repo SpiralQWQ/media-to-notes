@@ -84,3 +84,7 @@
 [0.2.1]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.2.1
 [0.2.0]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.2.0
 [0.1.0]: https://github.com/SpiralQWQ/media-to-notes/releases/tag/v0.1.0
+
+## v0.4.1（未发布）
+- 测试：补全 76 个单元测试（core/cli/engines/clean/assemble，原 5 个）
+- 修复：_classify(None) 崩溃；timeline 未排序；组装源缺失崩溃；图集 GLM 异常冒泡

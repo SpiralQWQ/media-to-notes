@@ -34,6 +34,8 @@ def process_audio(audio: str, out_root: str = "") -> dict:
     cjson = transcript.clean_transcript_json(tjson) if os.path.exists(tjson) else ""
 
     # ③ 组装：按时间排 → md
+    if not cjson:
+        return {"error": "转写 json 缺失，无法组装", "tjson": tjson}
     md = timeline.assemble_timeline(cjson, title=stem)
     clean_md = os.path.join(out_root, f"{stem}_clean.md")
     with open(clean_md, "w", encoding="utf-8") as f:

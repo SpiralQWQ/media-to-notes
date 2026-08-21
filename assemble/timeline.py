@@ -19,6 +19,8 @@ def assemble_timeline(clean_json: str, title: str = "") -> str:
     sents = data.get("sentences", []) if isinstance(data, dict) else []
     if not isinstance(sents, list):
         sents = []
+    sents = [s for s in sents if isinstance(s, dict)]
+    sents.sort(key=lambda s: int(s.get("start_ms") or 0))
     lines = []
     for s in sents:
         if not isinstance(s, dict):

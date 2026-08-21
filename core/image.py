@@ -49,7 +49,10 @@ def process_image(images: list, out_root: str = "", glm: str = "no") -> dict:
         if t.strip():
             block += f"\n[画面文字 OCR]\n{t.strip()}"
         if glm == "yes":           # GLM 询问用户开/关（同视频：glm=yes 才看懂画面）
-            d = _glm_describe(p)
+            try:
+                d = _glm_describe(p)
+            except Exception:
+                d = ""
             if d:
                 block += f"\n[GLM画面理解]\n{d}"
         blocks.append(block)
